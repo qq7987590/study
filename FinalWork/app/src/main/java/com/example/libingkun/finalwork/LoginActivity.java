@@ -1,5 +1,9 @@
 package com.example.libingkun.finalwork;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -20,45 +24,38 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.IOError;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.logging.LogRecord;
 
 
 public class LoginActivity extends ActionBarActivity {
 
-    private EditText userName;
+    private EditText email;
     private EditText passWord;
     private Button login;
     private String result = "";
-    private Handler handler;
+    private static Handler handler;
+    private static final int MSG_LOGERROR = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         login = (Button)findViewById(R.id.login);
-        userName = (EditText)findViewById(R.id.username);
+        email = (EditText)findViewById(R.id.email);
         passWord  = (EditText)findViewById(R.id.password);
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg){
-                super.handleMessage(msg);
-                if(result != null){
-
-                    Toast.makeText(LoginActivity.this,result,Toast.LENGTH_SHORT).show();
-
-                }
-
-            }
-        };
+        createHandler();
 
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if ("".equals(userName.getText().toString())){
+                if ("".equals(email.getText().toString())){
                     Toast.makeText(LoginActivity.this,"请输入用户名！",Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -70,10 +67,46 @@ public class LoginActivity extends ActionBarActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-//                        Toast.makeText(LoginActivity.this,"发送前！",Toast.LENGTH_SHORT).show();
                         send();
-                        Message msg = handler.obtainMessage();
-                        handler.sendMessage(msg);
+                        if(result != null){
+
+                            //Toast.makeText(LoginActivity.this,result,Toast.LENGTH_SHORT).show();
+                            Log.i("return",result);
+                            JSONTokener jsonParser = new JSONTokener(result);
+                            try {
+                                JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
+                                boolean loginStatus=jsonResult.getBoolean("loginStatus");
+                                if(loginStatus){
+                                    SharedPreferences sp = getSharedPreferences("user",MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sp.edit();
+                                    editor.putString("uid",jsonResult.getString("uid"));
+                                    editor.putString("email",jsonResult.getString("email"));
+                                    editor.putString("type",jsonResult.getString("type"));
+                                    editor.putString("name",jsonResult.getString("name"));
+                                    editor.putString("password",jsonResult.getString("password"));
+                                    editor.putString("phone",jsonResult.getString("phone"));
+                                    editor.putString("sex",jsonResult.getString("sex"));
+                                    editor.putString("birthday",jsonResult.getString("birthday"));
+                                    editor.putString("idcard",jsonResult.getString("idcard"));
+                                    editor.commit();
+
+                                    Intent it = new Intent(LoginActivity.this,MainActivity.class);
+                                    startActivity(it);
+
+
+                                }
+                                else {
+                                    Message msg = handler.obtainMessage();
+                                    msg.what = MSG_LOGERROR;
+                                    handler.sendMessage(msg);
+                                }
+                            }
+                            catch (Exception e){
+                                Log.i("Exception",e.toString());
+                            }
+
+                        }
+
 
 //                        Toast.makeText(LoginActivity.this,"好了！",Toast.LENGTH_SHORT).show();
 //                        Toast.makeText(LoginActivity.this,result,Toast.LENGTH_SHORT).show();
@@ -110,7 +143,9 @@ public class LoginActivity extends ActionBarActivity {
     }
     public void send(){
         //请求地址
-        String target="http://10.0.2.2:80/text/text.html";
+        String emailInput = email.getText().toString();
+        String passWordInput = passWord.getText().toString();
+        String target="http://10.0.2.2/Home/User/login?email="+emailInput+"&password="+passWordInput;
         //创建HttpClient对象
         HttpClient httpClient = new DefaultHttpClient();
         //创建HttpGet对象
@@ -125,10 +160,20 @@ public class LoginActivity extends ActionBarActivity {
             }else{
                 result = "请求失败!";
             }
-        }catch (ClientProtocolException e){
-            e.printStackTrace();
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
+    }
+    private void createHandler(){
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg){
+                super.handleMessage(msg);
+                if(msg.what == MSG_LOGERROR){
+                        Toast.makeText(LoginActivity.this,"邮箱/密码错误!",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        };
     }
 }
