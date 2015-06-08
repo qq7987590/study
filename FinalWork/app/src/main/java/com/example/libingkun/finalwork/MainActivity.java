@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -58,17 +59,17 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
+//        switch (number) {
+//            case 1:
+//                mTitle = getString(R.string.title_section1);
+//                break;
+//            case 2:
+//                mTitle = getString(R.string.title_section2);
+//                break;
+//            case 3:
+//                mTitle = getString(R.string.title_section3);
+//                break;
+//        }
     }
 
     public void restoreActionBar() {
@@ -139,17 +140,17 @@ public class MainActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
-                case SECTION_USER_INFO:
-                    rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
+            String[] sections=NavigationDrawerFragment.sections;
+            System.out.print("asa");
+            int sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+            switch(sections[sectionNumber-1]) {
+                case  "报告管理":
+                    rootView = inflater.inflate(R.layout.fragment_manage_report, container, false);
                     break;
-                case 2:
-                    //rootView = inflater.inflate(R.layout.fragment_obj_list, container, false);
+                case "创建报告":
+                    rootView = inflater.inflate(R.layout.fragment_create_report, container, false);
                     break;
-                case 3:
-                    //rootView = inflater.inflate(R.layout.fragment_obj_list, container, false);
-                    break;
-                case 4:
+                case "个人信息":
                     rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
                     break;
             }

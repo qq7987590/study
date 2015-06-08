@@ -1,5 +1,6 @@
 package com.example.libingkun.finalwork;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -58,6 +59,15 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    public static String[] sections = null;
+    private final static String DISTRIBUTER = "0";
+    private final static String SALEMAN = "1";
+    private final static String ASSESSMENT = "2";
+    private final static String TREASUTER = "3";
+    private final static String CLERK = "4";
+    private final static String FIRST_APPRAISER = "5";
+    private final static String SECOND_APPRAISER = "6";
+
     public NavigationDrawerFragment() {
     }
 
@@ -97,16 +107,60 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+        SharedPreferences sp = this.getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
+        String userType = sp.getString("type","");
+
+        switch (userType){
+            case DISTRIBUTER:
+                sections= new String[]{
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.CREATE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+            case SALEMAN:
+                sections= new String[]{
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+            case ASSESSMENT:
+                sections= new String[]{
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+            case TREASUTER:
+                sections= new String[]{
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+            case CLERK:
+                sections= new String[]{
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+            case FIRST_APPRAISER:
+                sections= new String[]{
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+            case SECOND_APPRAISER:
+                sections= new String[]{
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+        }
+
+
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.title_section4),
-                }));
+                android.R.id.text1,sections));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
