@@ -116,7 +116,10 @@ public class MainActivity extends ActionBarActivity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-
+        /**
+         * 菜单项
+         */
+        private static final int SECTION_USER_INFO = 1;
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -136,6 +139,20 @@ public class MainActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
+                case SECTION_USER_INFO:
+                    rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
+                    break;
+                case 2:
+                    //rootView = inflater.inflate(R.layout.fragment_obj_list, container, false);
+                    break;
+                case 3:
+                    //rootView = inflater.inflate(R.layout.fragment_obj_list, container, false);
+                    break;
+                case 4:
+                    rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
+                    break;
+            }
             return rootView;
         }
 

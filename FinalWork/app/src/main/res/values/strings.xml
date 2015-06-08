@@ -8,9 +8,13 @@
     <string name="title_section1">报告管理</string>
     <string name="title_section2">创建报告</string>
     <string name="title_section3">个人信息</string>
+    <string name="title_section4">加个测试</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_example">Example action</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
