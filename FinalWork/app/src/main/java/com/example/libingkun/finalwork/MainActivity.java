@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -149,6 +150,8 @@ public class MainActivity extends ActionBarActivity
                     break;
                 case "创建报告":
                     rootView = inflater.inflate(R.layout.fragment_create_report, container, false);
+//                    EditText mytest1 = (EditText) rootView.findViewById(R.id.mytest);
+//                    mytest1.setKeyListener(null);
                     break;
                 case "个人信息":
                     rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
