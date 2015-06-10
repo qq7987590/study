@@ -145,7 +145,7 @@ public class LoginActivity extends ActionBarActivity {
         //请求地址
         String emailInput = email.getText().toString();
         String passWordInput = passWord.getText().toString();
-        String target="http://10.0.2.2/Home/User/login?email="+emailInput+"&password="+passWordInput;
+        String target="http://"+getString(R.string.server_host)+"/Home/User/login?email="+emailInput+"&password="+passWordInput;
         //创建HttpClient对象
         HttpClient httpClient = new DefaultHttpClient();
         //创建HttpGet对象
