@@ -4,7 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="server_host">192.168.191.3</string>
+    <string name="server_host">10.0.2.2</string>
 
     <string name="MANAGE_REPORT">报告管理</string>
     <string name="CREATE_REPORT">创建报告</string>
