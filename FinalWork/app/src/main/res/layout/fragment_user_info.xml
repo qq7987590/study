@@ -35,25 +35,30 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint=""/>
+            android:hint=""
+            android:enabled="false"/>
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="性别:"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            />
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:id="@+id/sex">
+            android:id="@+id/sex"
+            >
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="男"/>
+            android:text="男"
+            android:enabled="false"/>
         <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="女"/>
+                android:text="女"
+                android:enabled="false"/>
             </RadioGroup>
         <TextView
             android:layout_width="fill_parent"
@@ -65,7 +70,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint=""/>
+            android:hint=""
+            android:enabled="false"/>
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -76,7 +82,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint=""/>
+            android:hint=""
+            android:enabled="false"/>
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -87,7 +94,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint=""/>
+            android:hint=""
+            android:enabled="false"/>
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -98,7 +106,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint=""/>
+            android:hint=""
+            android:enabled="false"/>
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -109,7 +118,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint=""/>
+            android:hint=""
+            android:enabled="false"/>
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
