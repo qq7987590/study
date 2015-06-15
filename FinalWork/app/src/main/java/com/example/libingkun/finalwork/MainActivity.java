@@ -3,8 +3,8 @@ package com.example.libingkun.finalwork;
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,8 +23,8 @@ import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks
+{
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -53,10 +53,27 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment thisFragment;
+        String[] sections=NavigationDrawerFragment.sections;
+        switch(sections[position]) {
+            case  "报告管理":
+                thisFragment= ManageReportFragment.newInstance("","");
+                break;
+            case "创建报告":
+                thisFragment= CreateReportFragment.newInstance("","");
+                break;
+            case "个人信息":
+                thisFragment= UserInfoFragment.newInstance("","");
+                break;
+            default:
+                thisFragment= UserInfoFragment.newInstance("","");
+                break;
+
+        }
         CreateReportFragment a= CreateReportFragment.newInstance("","");
         fragmentManager.beginTransaction()
-                .replace(R.id.container, a)
+                .replace(R.id.container, thisFragment)
                 .commit();
     }
 
