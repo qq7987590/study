@@ -173,18 +173,11 @@ public class MainActivity extends ActionBarActivity
                     break;
                 case "个人信息":
                     rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
-                    rootView = initUserInfoFragement(rootView);
                     break;
             }
             return rootView;
         }
-        //各fragment处理代码
-        public View initUserInfoFragement(View rootView){
-            EditText userID = (EditText)rootView.findViewById(R.id.userID);
-            userID.setText("hahahaha");
-            userID.setEnabled(true);
-            return rootView;
-        }
+
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);

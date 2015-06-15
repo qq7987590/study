@@ -1,12 +1,17 @@
 package com.example.libingkun.finalwork;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 
 
 /**
@@ -27,7 +32,16 @@ public class UserInfoFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-
+    private EditText userID;
+    private EditText name;
+    private RadioGroup sex;
+    private EditText phone;
+    private EditText email;
+    private EditText birthday;
+    private EditText IDCard;
+    private EditText password;
+    private Button editInfo;
+    private boolean couldEdit = false;
 
     /**
      * Use this factory method to create a new instance of
@@ -64,7 +78,36 @@ public class UserInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_info, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
+        userID = (EditText)rootView.findViewById(R.id.userID);
+        name = (EditText)rootView.findViewById(R.id.name);
+        sex = (RadioGroup)rootView.findViewById(R.id.sex);
+        phone = (EditText)rootView.findViewById(R.id.phone);
+        email = (EditText)rootView.findViewById(R.id.email);
+        birthday = (EditText)rootView.findViewById(R.id.birthday);
+        IDCard = (EditText)rootView.findViewById(R.id.IDCard);
+        password = (EditText)rootView.findViewById(R.id.password);
+        editInfo = (Button)rootView.findViewById(R.id.editInfo);
+        rootView = initUserInfoFragement(rootView);
+        return rootView;
     }
 
+    private View initUserInfoFragement(View rootView){
+        SharedPreferences msp = this.getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
+        userID.setText(msp.getString("uid",""));
+        name.setText(msp.getString("name", ""));
+        if("m".equals(msp.getString("sex","")))
+            sex.check(R.id.male);
+        else
+            sex.check(R.id.female);
+        phone.setText(msp.getString("phone",""));
+        email.setText(msp.getString("email",""));
+        birthday.setText(msp.getString("birthday",""));
+        IDCard.setText(msp.getString("idcard",""));
+        password.setText(msp.getString("password",""));
+        editInfo.setOnClickListener();
+        return rootView;
+    }
+
+    public class 
 }
