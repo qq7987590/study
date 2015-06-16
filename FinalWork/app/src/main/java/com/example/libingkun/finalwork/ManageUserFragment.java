@@ -1,6 +1,8 @@
 package com.example.libingkun.finalwork;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -88,6 +91,22 @@ public class ManageUserFragment extends Fragment {
                 R.layout.user_list_item,new String[]{"userName","userType"},new int[]{
                 R.id.userName,R.id.userType});
         userList.setAdapter(adapter);
+
+        userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                for(int i =0;i<userList.getChildCount();i++){
+                    if(position == i) {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        Fragment thisFragment = UserInfoFragment.newInstance("","");
+//                        CreateReportFragment a= CreateReportFragment.newInstance("","");
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.container, thisFragment)
+                                .commit();
+                    }
+                }
+            }
+        });
         return viewRoot;
     }
 
