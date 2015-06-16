@@ -57,6 +57,9 @@ public class MainActivity extends ActionBarActivity
         Fragment thisFragment;
         String[] sections=NavigationDrawerFragment.sections;
         switch(sections[position]) {
+            case  "用户管理":
+                thisFragment= ManageUserFragment.newInstance("","");
+                break;
             case  "报告管理":
                 thisFragment= ManageReportFragment.newInstance("","");
                 break;
@@ -163,6 +166,9 @@ public class MainActivity extends ActionBarActivity
             System.out.print("asa");
             int sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
             switch(sections[sectionNumber-1]) {
+                case "用户管理":
+                    rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
+                    break;
                 case  "报告管理":
                     rootView = inflater.inflate(R.layout.fragment_manage_report, container, false);
                     break;
@@ -174,6 +180,7 @@ public class MainActivity extends ActionBarActivity
                 case "个人信息":
                     rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
                     break;
+
             }
             return rootView;
         }

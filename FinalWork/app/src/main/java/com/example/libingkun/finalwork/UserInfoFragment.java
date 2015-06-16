@@ -9,20 +9,29 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -125,6 +134,7 @@ public class UserInfoFragment extends Fragment {
     private View.OnClickListener editInfoListener = new View.OnClickListener() {
         private MyHandler handler;
         private static final int MSG_ERROR = 0;
+        private static final int MSG_SUCCESS = 1;
         @Override
         public void onClick(View v) {
             switch (buttonAction){
@@ -135,6 +145,7 @@ public class UserInfoFragment extends Fragment {
                 case "submitChange":
                     notAllowEdit();
                     changeActionTo("editText");
+                    sendInfoToChange();
                     break;
             }
         }
@@ -167,7 +178,6 @@ public class UserInfoFragment extends Fragment {
                 case "submitChange":
                     editInfo.setText("提交修改");
                     buttonAction = "submitChange";
-                    sendInfoToChange();
                     break;
             }
         }
@@ -175,19 +185,21 @@ public class UserInfoFragment extends Fragment {
             //创建Handler
             createHandler();
             new Thread(new Runnable() {
+
                 @Override
                 public void run() {
                     //获取数据
                     SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
                     String emailString = msp.getString("email", "");
                     String passwordString = msp.getString("email", "");
-
                     String nameString = name.getText().toString();
-                    int sexId = sex.getFocusedChild().getId();
                     String sexString = "";
-                    if (sexId == 0) {
+                    RadioButton mChild= (RadioButton)sex.getChildAt(0);
+                    RadioButton fChild= (RadioButton)sex.getChildAt(1);
+                    if (mChild.isChecked()) {
                         sexString = "m";
-                    } else {
+                    }
+                    else if(fChild.isChecked()){
                         sexString = "f";
                     }
                     String phoneString = phone.getText().toString();
@@ -196,38 +208,56 @@ public class UserInfoFragment extends Fragment {
                     String IDCardString = IDCard.getText().toString();
                     String newPasswordString = password.getText().toString();
                     //请求地址
-                    String target = "http://" + getString(R.string.server_host) + "/Home/User/changeInfo?email=" + emailString
-                            + "&password=" + passwordString
-                            + "&name=" + nameString
-                            + "&sex=" + sexString
-                            + "&phone=" + phoneString
-                            + "&newEmail" + newEmailString
-                            + "&birthday" + birthdayString
-                            + "&IDCard" + IDCardString
-                            + "&newPassword" + newPasswordString;
-                    //创建HttpClient对象
+                    String target = "http://" + getString(R.string.server_host) + "/Home/User/changeInfo";
                     HttpClient httpClient = new DefaultHttpClient();
+                    HttpPost httpRequst = new HttpPost(target);
+                    //将要传的值保存到List集合中
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("param","post"));
+                    params.add(new BasicNameValuePair("param","post"));
+                    params.add(new BasicNameValuePair("email",emailString));
+                    params.add(new BasicNameValuePair("password",passwordString));
+                    params.add(new BasicNameValuePair("name",nameString));
+                    params.add(new BasicNameValuePair("sex",sexString));
+                    params.add(new BasicNameValuePair("phone",phoneString));
+                    params.add(new BasicNameValuePair("newEmail",newEmailString));
+                    params.add(new BasicNameValuePair("birthday",birthdayString));
+                    params.add(new BasicNameValuePair("IDCard",IDCardString));
+                    params.add(new BasicNameValuePair("newPassword",newPasswordString));
                     //创建HttpGet对象
-                    HttpGet httpRequest = new HttpGet(target);
-                    HttpResponse httpResponse;
                     try {
                         //执行HttpClient请求
-                        httpResponse = httpClient.execute(httpRequest);
-                        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                            //返回获取的字符串
+                        httpRequst.setEntity(new UrlEncodedFormEntity(params,"utf-8"));
+                        HttpResponse httpResponse = httpClient.execute(httpRequst);
+//                        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
                             result = EntityUtils.toString(httpResponse.getEntity());
-                        } else {
-                            result = "请求失败!";
-                        }
+//                        }
+//                        else{
+//                            result="请求失败";
+//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     //用handler处理消息
                     Message msg = handler.obtainMessage();
-                    msg.what = MSG_ERROR;
+                    if("1".equals(result)){
+                        SharedPreferences.Editor editor = msp.edit();
+                        editor.putString("email",newEmailString);
+                        editor.putString("password",newPasswordString);
+                        editor.putString("name",nameString);
+                        editor.putString("phone",phoneString);
+                        editor.putString("sex",sexString);
+                        editor.putString("birthday",birthdayString);
+                        editor.putString("idcard",IDCardString);
+                        editor.commit();
+                        msg.what = MSG_SUCCESS;
+                    }
+                    else{
+                        msg.what = MSG_ERROR;
+                    }
                     handler.sendMessage(msg);
                 }
-            });
+            }).start();
         }
         private void createHandler(){
             handler = new MyHandler();
@@ -237,7 +267,12 @@ public class UserInfoFragment extends Fragment {
             public void handleMessage(Message msg){
                 super.handleMessage(msg);
                 if(msg.what == MSG_ERROR){
-                    Toast.makeText(myActivity, "修改错误!", Toast.LENGTH_SHORT).show();
+                    Log.i("res",result);
+                    Toast.makeText(myActivity, "信息修改失败!", Toast.LENGTH_SHORT).show();
+                }
+                if(msg.what == MSG_SUCCESS){
+                    Log.i("res",result);
+                    Toast.makeText(myActivity, "信息修改成功!", Toast.LENGTH_SHORT).show();
                 }
 
             }

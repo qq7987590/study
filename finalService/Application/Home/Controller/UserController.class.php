@@ -24,7 +24,37 @@ class UserController extends Controller {
     		$this->jsonReturn($return,'jsonp');
     	}
     }
+    public function changeInfo(){
+        $result = $this -> checkUser($_POST['email'],$_POST['password']);
+        if(sizeof($result)==1){
+            $uid = $result[0]['uid'];
+            $user = M("User");
+            $data = array(
+                'email' => $_POST['newEmail'],
+                'name' => $_POST['name'],
+                'password' => $_POST['newPassword'],
+                'phone' => $_POST['phone'],
+                'sex' => $_POST['sex'],
+                'birthday' => $_POST['birthday'],
+                'idcard' => $_POST['IDCard']
+                );
+
+            $user -> where("uid = $uid") ->setField($data);
+            echo "1";
+        }
+        else{
+            echo "0";
+        }
+        
+    }
     private function jsonReturn($return){
         echo json_encode($return);
+    }
+    private function checkUser($email,$password){
+        $user = M('User');
+        $map['email'] = $email;
+        $map['password'] = $password;
+        $result = $user -> where($map) ->select();
+        return $result;
     }
 }

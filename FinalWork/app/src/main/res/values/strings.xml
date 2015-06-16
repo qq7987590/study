@@ -6,6 +6,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="server_host">10.0.2.2</string>
 
+    <string name="MANAGE_USER">用户管理</string>
     <string name="MANAGE_REPORT">报告管理</string>
     <string name="CREATE_REPORT">创建报告</string>
     <string name="PERSONAL_INFO">个人信息</string>

@@ -67,6 +67,7 @@ public class NavigationDrawerFragment extends Fragment {
     private final static String CLERK = "4";
     private final static String FIRST_APPRAISER = "5";
     private final static String SECOND_APPRAISER = "6";
+    private final static String ADMINISTRATOR="7";
 
     public NavigationDrawerFragment() {
     }
@@ -118,6 +119,14 @@ public class NavigationDrawerFragment extends Fragment {
             case SECOND_APPRAISER:
                 sections= new String[]{
                         getString(R.string.MANAGE_REPORT),
+                        getString(R.string.PERSONAL_INFO),
+                };
+                break;
+            case ADMINISTRATOR:
+                sections= new String[]{
+                        getString(R.string.MANAGE_USER),
+                        getString(R.string.MANAGE_REPORT),
+                        getString(R.string.CREATE_REPORT),
                         getString(R.string.PERSONAL_INFO),
                 };
                 break;
