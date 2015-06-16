@@ -4,9 +4,17 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,6 +35,7 @@ public class ManageUserFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private ListView userList;
 
     /**
      * Use this factory method to create a new instance of
@@ -63,7 +72,23 @@ public class ManageUserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_manage_user, container, false);
+        View viewRoot = inflater.inflate(R.layout.fragment_manage_user, container, false);
+        //填满列表
+        userList = (ListView)viewRoot.findViewById(R.id.userList);
+        String[] userName = new String[]{"lbk","李柄坤","凉白开"};
+        String[] userType = new String[]{"管理员","扫大街","不知道"};
+        List<Map<String,Object>> listItems = new ArrayList<Map<String,Object>>();
+        for(int i = 0;i < userName.length;i++){
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("userName",userName[i]);
+            map.put("userType",userType[i]);
+            listItems.add(map);
+        }
+        SimpleAdapter adapter = new SimpleAdapter(viewRoot.getContext(),listItems,
+                R.layout.user_list_item,new String[]{"userName","userType"},new int[]{
+                R.id.userName,R.id.userType});
+        userList.setAdapter(adapter);
+        return viewRoot;
     }
 
 }
