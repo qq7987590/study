@@ -39,7 +39,7 @@ public class LoginActivity extends ActionBarActivity {
     private EditText passWord;
     private Button login;
     private String result = "";
-    private static Handler handler;
+    private MyHandler handler;
     private static final int MSG_LOGERROR = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,15 +165,16 @@ public class LoginActivity extends ActionBarActivity {
         }
     }
     private void createHandler(){
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg){
-                super.handleMessage(msg);
-                if(msg.what == MSG_LOGERROR){
-                        Toast.makeText(LoginActivity.this,"邮箱/密码错误!",Toast.LENGTH_SHORT).show();
-                }
-
+        handler = new MyHandler();
+    }
+    class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg){
+            super.handleMessage(msg);
+            if(msg.what == MSG_LOGERROR){
+                Toast.makeText(LoginActivity.this, "账号/密码错误!", Toast.LENGTH_SHORT).show();
             }
-        };
+
+        }
     }
 }

@@ -123,7 +123,7 @@ public class UserInfoFragment extends Fragment {
     }
 
     private View.OnClickListener editInfoListener = new View.OnClickListener() {
-        private static MyHandler handler;
+        private MyHandler handler;
         private static final int MSG_ERROR = 0;
         @Override
         public void onClick(View v) {
@@ -167,43 +167,44 @@ public class UserInfoFragment extends Fragment {
                 case "submitChange":
                     editInfo.setText("提交修改");
                     buttonAction = "submitChange";
+                    sendInfoToChange();
                     break;
             }
         }
-        private void send() {
+        private void sendInfoToChange() {
             //创建Handler
             createHandler();
-            //获取数据
-            SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
-            String emailString = msp.getString("email", "");
-            String passwordString = msp.getString("email", "");
-
-            String nameString = name.getText().toString();
-            int sexId = sex.getFocusedChild().getId();
-            String sexString = "";
-            if (sexId == 0) {
-                sexString = "m";
-            } else {
-                sexString = "f";
-            }
-            String phoneString = phone.getText().toString();
-            String newEmailString = email.getText().toString();
-            String birthdayString = birthday.getText().toString();
-            String IDCardString = IDCard.getText().toString();
-            String newPasswordString = password.getText().toString();
-            //请求地址
-            String target = "http://" + getString(R.string.server_host) + "/Home/User/changeInfo?email=" + emailString
-                    + "&password=" + passwordString
-                    + "&name=" + nameString
-                    + "&sex=" + sexString
-                    + "&phone=" + phoneString
-                    + "&newEmail" + newEmailString
-                    + "&birthday" + birthdayString
-                    + "&IDCard" + IDCardString
-                    + "&newPassword" + newPasswordString;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    //获取数据
+                    SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
+                    String emailString = msp.getString("email", "");
+                    String passwordString = msp.getString("email", "");
+
+                    String nameString = name.getText().toString();
+                    int sexId = sex.getFocusedChild().getId();
+                    String sexString = "";
+                    if (sexId == 0) {
+                        sexString = "m";
+                    } else {
+                        sexString = "f";
+                    }
+                    String phoneString = phone.getText().toString();
+                    String newEmailString = email.getText().toString();
+                    String birthdayString = birthday.getText().toString();
+                    String IDCardString = IDCard.getText().toString();
+                    String newPasswordString = password.getText().toString();
+                    //请求地址
+                    String target = "http://" + getString(R.string.server_host) + "/Home/User/changeInfo?email=" + emailString
+                            + "&password=" + passwordString
+                            + "&name=" + nameString
+                            + "&sex=" + sexString
+                            + "&phone=" + phoneString
+                            + "&newEmail" + newEmailString
+                            + "&birthday" + birthdayString
+                            + "&IDCard" + IDCardString
+                            + "&newPassword" + newPasswordString;
                     //创建HttpClient对象
                     HttpClient httpClient = new DefaultHttpClient();
                     //创建HttpGet对象
@@ -231,12 +232,12 @@ public class UserInfoFragment extends Fragment {
         private void createHandler(){
             handler = new MyHandler();
         }
-        private class MyHandler extends Handler {
+        class MyHandler extends Handler {
             @Override
             public void handleMessage(Message msg){
                 super.handleMessage(msg);
                 if(msg.what == MSG_ERROR){
-                    Toast.makeText(LoginActivity.this, "修改错误!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(myActivity, "修改错误!", Toast.LENGTH_SHORT).show();
                 }
 
             }
