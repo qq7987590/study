@@ -2,16 +2,27 @@ package com.example.libingkun.finalwork;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 
 /**
@@ -32,6 +43,7 @@ public class UserInfoFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private Activity myActivity;
     private EditText userID;
     private EditText name;
     private RadioGroup sex;
@@ -41,8 +53,8 @@ public class UserInfoFragment extends Fragment {
     private EditText IDCard;
     private EditText password;
     private Button editInfo;
-    private boolean couldEdit = false;
-
+    private String buttonAction = "editText";
+    private String result = "";
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -93,7 +105,8 @@ public class UserInfoFragment extends Fragment {
     }
 
     private View initUserInfoFragement(View rootView){
-        SharedPreferences msp = this.getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
+        myActivity = this.getActivity();
+        SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
         userID.setText(msp.getString("uid",""));
         name.setText(msp.getString("name", ""));
         if("m".equals(msp.getString("sex","")))
@@ -105,9 +118,128 @@ public class UserInfoFragment extends Fragment {
         birthday.setText(msp.getString("birthday",""));
         IDCard.setText(msp.getString("idcard",""));
         password.setText(msp.getString("password",""));
-        editInfo.setOnClickListener();
+        editInfo.setOnClickListener(editInfoListener);
         return rootView;
     }
 
-    public class 
+    private View.OnClickListener editInfoListener = new View.OnClickListener() {
+        private static MyHandler handler;
+        private static final int MSG_ERROR = 0;
+        @Override
+        public void onClick(View v) {
+            switch (buttonAction){
+                case "editText":
+                    allowEdit();
+                    changeActionTo("submitChange");
+                    break;
+                case "submitChange":
+                    notAllowEdit();
+                    changeActionTo("editText");
+                    break;
+            }
+        }
+        private void allowEdit(){
+            name.setEnabled(true);
+            sex.getChildAt(0).setEnabled(true);
+            sex.getChildAt(1).setEnabled(true);
+            phone.setEnabled(true);
+            email.setEnabled(true);
+            birthday.setEnabled(true);
+            IDCard.setEnabled(true);
+            password.setEnabled(true);
+        }
+        private void notAllowEdit(){
+            name.setEnabled(false);
+            sex.getChildAt(0).setEnabled(false);
+            sex.getChildAt(1).setEnabled(false);
+            phone.setEnabled(false);
+            email.setEnabled(false);
+            birthday.setEnabled(false);
+            IDCard.setEnabled(false);
+            password.setEnabled(false);
+        }
+        private void changeActionTo(String nextAction){
+            switch (nextAction){
+                case "editText":
+                    editInfo.setText("修改资料");
+                    buttonAction = "editText";
+                    break;
+                case "submitChange":
+                    editInfo.setText("提交修改");
+                    buttonAction = "submitChange";
+                    break;
+            }
+        }
+        private void send() {
+            //创建Handler
+            createHandler();
+            //获取数据
+            SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
+            String emailString = msp.getString("email", "");
+            String passwordString = msp.getString("email", "");
+
+            String nameString = name.getText().toString();
+            int sexId = sex.getFocusedChild().getId();
+            String sexString = "";
+            if (sexId == 0) {
+                sexString = "m";
+            } else {
+                sexString = "f";
+            }
+            String phoneString = phone.getText().toString();
+            String newEmailString = email.getText().toString();
+            String birthdayString = birthday.getText().toString();
+            String IDCardString = IDCard.getText().toString();
+            String newPasswordString = password.getText().toString();
+            //请求地址
+            String target = "http://" + getString(R.string.server_host) + "/Home/User/changeInfo?email=" + emailString
+                    + "&password=" + passwordString
+                    + "&name=" + nameString
+                    + "&sex=" + sexString
+                    + "&phone=" + phoneString
+                    + "&newEmail" + newEmailString
+                    + "&birthday" + birthdayString
+                    + "&IDCard" + IDCardString
+                    + "&newPassword" + newPasswordString;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //创建HttpClient对象
+                    HttpClient httpClient = new DefaultHttpClient();
+                    //创建HttpGet对象
+                    HttpGet httpRequest = new HttpGet(target);
+                    HttpResponse httpResponse;
+                    try {
+                        //执行HttpClient请求
+                        httpResponse = httpClient.execute(httpRequest);
+                        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                            //返回获取的字符串
+                            result = EntityUtils.toString(httpResponse.getEntity());
+                        } else {
+                            result = "请求失败!";
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //用handler处理消息
+                    Message msg = handler.obtainMessage();
+                    msg.what = MSG_ERROR;
+                    handler.sendMessage(msg);
+                }
+            });
+        }
+        private void createHandler(){
+            handler = new MyHandler();
+        }
+        private class MyHandler extends Handler {
+            @Override
+            public void handleMessage(Message msg){
+                super.handleMessage(msg);
+                if(msg.what == MSG_ERROR){
+                    Toast.makeText(LoginActivity.this, "修改错误!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+    };
 }
