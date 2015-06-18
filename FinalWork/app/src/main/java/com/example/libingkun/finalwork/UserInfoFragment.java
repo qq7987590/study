@@ -49,7 +49,7 @@ public class UserInfoFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String userIDString;
     private String mParam2;
 
     private Activity myActivity;
@@ -64,6 +64,8 @@ public class UserInfoFragment extends Fragment {
     private Button editInfo;
     private String buttonAction = "editText";
     private String result = "";
+    private String emailString = "";
+    private String passwordString = "";
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -90,7 +92,7 @@ public class UserInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            userIDString = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -115,18 +117,58 @@ public class UserInfoFragment extends Fragment {
 
     private View initUserInfoFragement(View rootView){
         myActivity = this.getActivity();
-        SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
-        userID.setText(msp.getString("uid",""));
-        name.setText(msp.getString("name", ""));
-        if("m".equals(msp.getString("sex","")))
-            sex.check(R.id.male);
-        else
-            sex.check(R.id.female);
-        phone.setText(msp.getString("phone",""));
-        email.setText(msp.getString("email",""));
-        birthday.setText(msp.getString("birthday",""));
-        IDCard.setText(msp.getString("idcard",""));
-        password.setText(msp.getString("password",""));
+        if("".equals(userIDString)) {
+            SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
+            userIDString = msp.getString("uid", "");
+        }
+        //创建Handler
+        createHandler();
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                //请求地址
+                String target = "http://" + getString(R.string.server_host) + "/Home/User/getAllUser";
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost httpRequst = new HttpPost(target);
+                //将要传的值保存到List集合中
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("param","post"));
+                //创建HttpGet对象
+                try {
+                    //执行HttpClient请求
+                    httpRequst.setEntity(new UrlEncodedFormEntity(params,"utf-8"));
+                    HttpResponse httpResponse = httpClient.execute(httpRequst);
+//                        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                    result = EntityUtils.toString(httpResponse.getEntity());
+//                        }
+//                        else{
+//                            result="请求失败";
+//                        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //用handler处理消息
+                Message msg = handler.obtainMessage();
+                if(!"-1".equals(result)){
+                    msg.what = MSG_SUCCESS;
+                }
+                else{
+                    msg.what = MSG_ERROR;
+                }
+                handler.sendMessage(msg);
+            }
+        }).start();
+//        name.setText(msp.getString("name", ""));
+//        if("m".equals(msp.getString("sex","")))
+//            sex.check(R.id.male);
+//        else
+//            sex.check(R.id.female);
+//        phone.setText(msp.getString("phone",""));
+//        email.setText(msp.getString("email",""));
+//        birthday.setText(msp.getString("birthday",""));
+//        IDCard.setText(msp.getString("idcard",""));
+//        password.setText(msp.getString("password",""));
         editInfo.setOnClickListener(editInfoListener);
         return rootView;
     }
@@ -139,6 +181,8 @@ public class UserInfoFragment extends Fragment {
         public void onClick(View v) {
             switch (buttonAction){
                 case "editText":
+                    emailString = email.getText().toString();
+                    passwordString = password.getText().toString();
                     allowEdit();
                     changeActionTo("submitChange");
                     break;
@@ -189,9 +233,6 @@ public class UserInfoFragment extends Fragment {
                 @Override
                 public void run() {
                     //获取数据
-                    SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
-                    String emailString = msp.getString("email", "");
-                    String passwordString = msp.getString("email", "");
                     String nameString = name.getText().toString();
                     String sexString = "";
                     RadioButton mChild= (RadioButton)sex.getChildAt(0);
@@ -213,7 +254,6 @@ public class UserInfoFragment extends Fragment {
                     HttpPost httpRequst = new HttpPost(target);
                     //将要传的值保存到List集合中
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("param","post"));
                     params.add(new BasicNameValuePair("param","post"));
                     params.add(new BasicNameValuePair("email",emailString));
                     params.add(new BasicNameValuePair("password",passwordString));
@@ -241,15 +281,6 @@ public class UserInfoFragment extends Fragment {
                     //用handler处理消息
                     Message msg = handler.obtainMessage();
                     if("1".equals(result)){
-                        SharedPreferences.Editor editor = msp.edit();
-                        editor.putString("email",newEmailString);
-                        editor.putString("password",newPasswordString);
-                        editor.putString("name",nameString);
-                        editor.putString("phone",phoneString);
-                        editor.putString("sex",sexString);
-                        editor.putString("birthday",birthdayString);
-                        editor.putString("idcard",IDCardString);
-                        editor.commit();
                         msg.what = MSG_SUCCESS;
                     }
                     else{

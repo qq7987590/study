@@ -238,7 +238,7 @@ public class ManageUserFragment extends Fragment {
                 for(int i =0;i<userList.getChildCount();i++){
                     if(position == i) {
                         FragmentManager fragmentManager = getFragmentManager();
-                        Fragment thisFragment = UserInfoFragment.newInstance("","");
+                        Fragment thisFragment = UserInfoFragment.newInstance("4","");
 //                        CreateReportFragment a= CreateReportFragment.newInstance("","");
                         fragmentManager.beginTransaction()
                                 .replace(R.id.container, thisFragment)
