@@ -47,6 +47,16 @@ class UserController extends Controller {
         }
         
     }
+    public function getAllUser(){
+        $user = M("User");
+        $result = $user -> select();
+        if(sizeof($result) == 0){
+            echo "-1";
+        }
+        else{
+            $this -> jsonReturn($result);
+        }
+    }
     private function jsonReturn($return){
         echo json_encode($return);
     }

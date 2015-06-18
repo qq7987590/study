@@ -28,6 +28,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +57,7 @@ public class ManageUserFragment extends Fragment {
     private String mParam2;
 
     private Activity myActivity;
+    private View viewRoot;
 
     private MyHandler handler;
     private String result="";
@@ -61,7 +65,7 @@ public class ManageUserFragment extends Fragment {
     private static final int MSG_SUCCESS = 1;
 
     private ListView userList;
-    private UserListListener listener;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -98,37 +102,19 @@ public class ManageUserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View viewRoot = inflater.inflate(R.layout.fragment_manage_user, container, false);
+        viewRoot = inflater.inflate(R.layout.fragment_manage_user, container, false);
         //获取Activity
         myActivity = this.getActivity();
+        //创建用户列表
+        createList();
+
+        return viewRoot;
+    }
+
+
+    private void createList(){
         //获得列表view
         userList = (ListView)viewRoot.findViewById(R.id.userList);
-        //初始化用户列表
-        viewRoot = initUserList(viewRoot);
-        //增加listener
-        userList.setOnItemClickListener(listener);
-        return viewRoot;
-    }
-
-    private View initUserList(View viewRoot) {
-
-        String[] userName = new String[]{"lbk", "李柄坤", "凉白开"};
-        String[] userType = new String[]{"管理员", "扫大街", "不知道"};
-        List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
-        for (int i = 0; i < userName.length; i++) {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("userName", userName[i]);
-            map.put("userType", userType[i]);
-            listItems.add(map);
-        }
-        SimpleAdapter adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
-                R.layout.user_list_item, new String[]{"userName", "userType"}, new int[]{
-                R.id.userName, R.id.userType});
-        userList.setAdapter(adapter);
-        return viewRoot;
-
-    }
-    private void getUserData(){
         //创建Handler
         createHandler();
         new Thread(new Runnable() {
@@ -158,7 +144,7 @@ public class ManageUserFragment extends Fragment {
                 }
                 //用handler处理消息
                 Message msg = handler.obtainMessage();
-                if("1".equals(result)){
+                if(!"-1".equals(result)){
                     msg.what = MSG_SUCCESS;
                 }
                 else{
@@ -172,36 +158,97 @@ public class ManageUserFragment extends Fragment {
         handler = new MyHandler();
     }
     class MyHandler extends Handler {
+        private UserListListener listener = new UserListListener();
         @Override
         public void handleMessage(Message msg){
             super.handleMessage(msg);
             if(msg.what == MSG_ERROR){
                 Log.i("res",result);
-                Toast.makeText(myActivity, "信息修改失败!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(myActivity, "获取不到用户数据!", Toast.LENGTH_SHORT).show();
             }
             if(msg.what == MSG_SUCCESS){
                 Log.i("res",result);
-                Toast.makeText(myActivity, "信息修改成功!", Toast.LENGTH_SHORT).show();
+                initUserListByResult();
             }
 
         }
-    }
+        private void initUserListByResult() {
+            ArrayList<String> userName = new ArrayList<String>();
+            ArrayList<String> userType = new ArrayList<String>();
+            try {
+                JSONTokener jsonParser = new JSONTokener(result);
+                JSONArray jsonResult = (JSONArray) jsonParser.nextValue();
+                for (int i = 0; i < jsonResult.length(); i++) {
+                    JSONObject jo = jsonResult.getJSONObject(i);
+                    userName.add(jo.getString("name"));
+                    userType.add(jo.getString("type"));
+                }
+            }
+            catch (Exception e){
+                Log.i("exception",e.toString());
+            }
+//            String[] userName = new String[]{"lbk", "李柄坤", "凉白开"};
+//            String[] userType = new String[]{"管理员", "扫大街", "不知道1"};
+            List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
+            for (int i = 0; i < userName.size(); i++) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("userName", userName.get(i));
+                String userTypeString = new String();
+                switch (userType.get(i)){
+                    case "0":
+                        userTypeString = "派单员";
+                        break;
+                    case "1":
+                        userTypeString = "业务员";
+                        break;
+                    case "2":
+                        userTypeString = "评估员";
+                        break;
+                    case "3":
+                        userTypeString = "财务员";
+                        break;
+                    case "4":
+                        userTypeString = "文员";
+                        break;
+                    case "5":
+                        userTypeString = "一级评估师";
+                        break;
+                    case "6":
+                        userTypeString = "二级评估师";
+                        break;
+                    case "7":
+                        userTypeString = "管理员";
+                        break;
+                }
+                map.put("userType", userTypeString);
+                listItems.add(map);
+            }
+            SimpleAdapter adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
+                    R.layout.user_list_item, new String[]{"userName", "userType"}, new int[]{
+                    R.id.userName, R.id.userType});
+            userList.setAdapter(adapter);
+            //增加listener
+            userList.setOnItemClickListener(listener);
 
-    //继承listener类
-    class UserListListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            for(int i =0;i<userList.getChildCount();i++){
-                if(position == i) {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    Fragment thisFragment = UserInfoFragment.newInstance("","");
+        }
+        //继承listener类
+        class UserListListener implements AdapterView.OnItemClickListener {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                for(int i =0;i<userList.getChildCount();i++){
+                    if(position == i) {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        Fragment thisFragment = UserInfoFragment.newInstance("","");
 //                        CreateReportFragment a= CreateReportFragment.newInstance("","");
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.container, thisFragment)
-                            .commit();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.container, thisFragment)
+                                .commit();
+                    }
                 }
             }
         }
     }
+
+
 
 }
