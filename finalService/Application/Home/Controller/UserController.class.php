@@ -47,6 +47,17 @@ class UserController extends Controller {
         }
         
     }
+    public function getUserInfo(){
+        $user = M("User");
+        $uid = $_POST["uid"];
+        $result = $user -> where("uid = $uid") -> select();
+        if(sizeof($result)!=0){
+            $this -> jsonReturn($result[0]);
+        }
+        else{
+            echo "-1";
+        }
+    }
     public function getAllUser(){
         $user = M("User");
         $result = $user -> select();

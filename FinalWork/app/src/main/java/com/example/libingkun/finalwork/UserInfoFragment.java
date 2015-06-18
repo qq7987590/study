@@ -29,6 +29,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +68,13 @@ public class UserInfoFragment extends Fragment {
     private String result = "";
     private String emailString = "";
     private String passwordString = "";
+
+    //handler相关
+    private MyHandler handler;
+    private static final int MSG_ERROR = 0;
+    private static final int MSG_SUCCESS = 1;
+    private static final int GET_IFO_SUCCESS = 3;
+    private static final int GET_IFO_ERROR = 4;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -128,12 +137,13 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void run() {
                 //请求地址
-                String target = "http://" + getString(R.string.server_host) + "/Home/User/getAllUser";
+                String target = "http://" + getString(R.string.server_host) + "/Home/User/getUserInfo";
                 HttpClient httpClient = new DefaultHttpClient();
                 HttpPost httpRequst = new HttpPost(target);
                 //将要传的值保存到List集合中
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("param","post"));
+                params.add(new BasicNameValuePair("uid",userIDString));
                 //创建HttpGet对象
                 try {
                     //执行HttpClient请求
@@ -151,32 +161,19 @@ public class UserInfoFragment extends Fragment {
                 //用handler处理消息
                 Message msg = handler.obtainMessage();
                 if(!"-1".equals(result)){
-                    msg.what = MSG_SUCCESS;
+                    msg.what = GET_IFO_SUCCESS;
                 }
                 else{
-                    msg.what = MSG_ERROR;
+                    msg.what = GET_IFO_ERROR;
                 }
                 handler.sendMessage(msg);
             }
         }).start();
-//        name.setText(msp.getString("name", ""));
-//        if("m".equals(msp.getString("sex","")))
-//            sex.check(R.id.male);
-//        else
-//            sex.check(R.id.female);
-//        phone.setText(msp.getString("phone",""));
-//        email.setText(msp.getString("email",""));
-//        birthday.setText(msp.getString("birthday",""));
-//        IDCard.setText(msp.getString("idcard",""));
-//        password.setText(msp.getString("password",""));
         editInfo.setOnClickListener(editInfoListener);
         return rootView;
     }
 
     private View.OnClickListener editInfoListener = new View.OnClickListener() {
-        private MyHandler handler;
-        private static final int MSG_ERROR = 0;
-        private static final int MSG_SUCCESS = 1;
         @Override
         public void onClick(View v) {
             switch (buttonAction){
@@ -290,23 +287,55 @@ public class UserInfoFragment extends Fragment {
                 }
             }).start();
         }
-        private void createHandler(){
-            handler = new MyHandler();
-        }
-        class MyHandler extends Handler {
-            @Override
-            public void handleMessage(Message msg){
-                super.handleMessage(msg);
-                if(msg.what == MSG_ERROR){
-                    Log.i("res",result);
-                    Toast.makeText(myActivity, "信息修改失败!", Toast.LENGTH_SHORT).show();
-                }
-                if(msg.what == MSG_SUCCESS){
-                    Log.i("res",result);
-                    Toast.makeText(myActivity, "信息修改成功!", Toast.LENGTH_SHORT).show();
-                }
+    };
 
+    //handler相关2
+    private void createHandler(){
+        handler = new MyHandler();
+    }
+    class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg){
+            super.handleMessage(msg);
+            if(msg.what == MSG_ERROR){
+                Log.i("res",result);
+                Toast.makeText(myActivity, "信息修改失败!", Toast.LENGTH_SHORT).show();
+            }
+            if(msg.what == MSG_SUCCESS){
+                Log.i("res",result);
+                Toast.makeText(myActivity, "信息修改成功!", Toast.LENGTH_SHORT).show();
+            }
+            if(msg.what == GET_IFO_ERROR){
+                Log.i("res",result);
+                Toast.makeText(myActivity, "获取信息失败!", Toast.LENGTH_SHORT).show();
+            }
+            if(msg.what == GET_IFO_SUCCESS){
+                Log.i("res",result);
+                initUserInfo();
+                //Toast.makeText(myActivity, "获取信息成功!", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+        private void initUserInfo() {
+            JSONTokener jsonParser = new JSONTokener(result);
+            try {
+                JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
+                userID.setText(jsonResult.getString("uid"));
+                name.setText(jsonResult.getString("name"));
+                if ("m".equals(jsonResult.getString("sex")))
+                    sex.check(R.id.male);
+                else
+                    sex.check(R.id.female);
+                phone.setText(jsonResult.getString("phone"));
+                email.setText(jsonResult.getString("email"));
+                birthday.setText(jsonResult.getString("birthday"));
+                IDCard.setText(jsonResult.getString("idcard"));
+                password.setText(jsonResult.getString("password"));
+            }
+            catch (Exception e){
+                Log.i("exce",e.toString());
             }
         }
-    };
+    }
 }

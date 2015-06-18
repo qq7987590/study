@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
@@ -173,6 +174,7 @@ public class ManageUserFragment extends Fragment {
 
         }
         private void initUserListByResult() {
+            ArrayList<String> userID = new ArrayList<String>();
             ArrayList<String> userName = new ArrayList<String>();
             ArrayList<String> userType = new ArrayList<String>();
             try {
@@ -180,6 +182,7 @@ public class ManageUserFragment extends Fragment {
                 JSONArray jsonResult = (JSONArray) jsonParser.nextValue();
                 for (int i = 0; i < jsonResult.length(); i++) {
                     JSONObject jo = jsonResult.getJSONObject(i);
+                    userID.add(jo.getString("uid"));
                     userName.add(jo.getString("name"));
                     userType.add(jo.getString("type"));
                 }
@@ -187,11 +190,11 @@ public class ManageUserFragment extends Fragment {
             catch (Exception e){
                 Log.i("exception",e.toString());
             }
-//            String[] userName = new String[]{"lbk", "李柄坤", "凉白开"};
-//            String[] userType = new String[]{"管理员", "扫大街", "不知道1"};
+
             List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < userName.size(); i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
+                map.put("userID", userID.get(i));
                 map.put("userName", userName.get(i));
                 String userTypeString = new String();
                 switch (userType.get(i)){
@@ -224,8 +227,8 @@ public class ManageUserFragment extends Fragment {
                 listItems.add(map);
             }
             SimpleAdapter adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
-                    R.layout.user_list_item, new String[]{"userName", "userType"}, new int[]{
-                    R.id.userName, R.id.userType});
+                    R.layout.user_list_item, new String[]{"userID","userName", "userType"}, new int[]{
+                    R.id.userID,R.id.userName, R.id.userType});
             userList.setAdapter(adapter);
             //增加listener
             userList.setOnItemClickListener(listener);
@@ -237,8 +240,10 @@ public class ManageUserFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 for(int i =0;i<userList.getChildCount();i++){
                     if(position == i) {
+                        TextView uidText = (TextView)userList.getChildAt(i).findViewById(R.id.userID);
+                        String uidString = uidText.getText().toString();
                         FragmentManager fragmentManager = getFragmentManager();
-                        Fragment thisFragment = UserInfoFragment.newInstance("4","");
+                        Fragment thisFragment = UserInfoFragment.newInstance(uidString,"");
 //                        CreateReportFragment a= CreateReportFragment.newInstance("","");
                         fragmentManager.beginTransaction()
                                 .replace(R.id.container, thisFragment)
