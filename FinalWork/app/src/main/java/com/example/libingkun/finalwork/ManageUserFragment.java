@@ -10,11 +10,14 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
@@ -66,6 +69,7 @@ public class ManageUserFragment extends Fragment {
     private static final int MSG_SUCCESS = 1;
 
     private ListView userList;
+    private EditText eSearch;
 
 
     /**
@@ -116,6 +120,7 @@ public class ManageUserFragment extends Fragment {
     private void createList(){
         //获得列表view
         userList = (ListView)viewRoot.findViewById(R.id.userList);
+        eSearch = (EditText)viewRoot.findViewById(R.id.etSearch);
         //创建Handler
         createHandler();
         new Thread(new Runnable() {
@@ -154,6 +159,27 @@ public class ManageUserFragment extends Fragment {
                 handler.sendMessage(msg);
             }
         }).start();
+    }
+    private String getUserType(String typeNumber){
+        switch (typeNumber){
+            case "0":
+                return "派单员";
+            case "1":
+                return "业务员";
+            case "2":
+                return "评估员";
+            case "3":
+                return "财务员";
+            case "4":
+                return "文员";
+            case "5":
+                return "一级评估师";
+            case "6":
+                return "二级评估师";
+            case "7":
+                return "管理员";
+        }
+        return "";
     }
     private void createHandler(){
         handler = new MyHandler();
@@ -196,34 +222,7 @@ public class ManageUserFragment extends Fragment {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("userID", userID.get(i));
                 map.put("userName", userName.get(i));
-                String userTypeString = new String();
-                switch (userType.get(i)){
-                    case "0":
-                        userTypeString = "派单员";
-                        break;
-                    case "1":
-                        userTypeString = "业务员";
-                        break;
-                    case "2":
-                        userTypeString = "评估员";
-                        break;
-                    case "3":
-                        userTypeString = "财务员";
-                        break;
-                    case "4":
-                        userTypeString = "文员";
-                        break;
-                    case "5":
-                        userTypeString = "一级评估师";
-                        break;
-                    case "6":
-                        userTypeString = "二级评估师";
-                        break;
-                    case "7":
-                        userTypeString = "管理员";
-                        break;
-                }
-                map.put("userType", userTypeString);
+                map.put("userType", getUserType(userType.get(i)));
                 listItems.add(map);
             }
             SimpleAdapter adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
@@ -232,6 +231,38 @@ public class ManageUserFragment extends Fragment {
             userList.setAdapter(adapter);
             //增加listener
             userList.setOnItemClickListener(listener);
+            set_eSearch_TextChanged();
+
+        }
+
+        private void set_eSearch_TextChanged()
+        {
+
+            eSearch.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                    // TODO Auto-generated method stub
+                    //这个应该是在改变的时候会做的动作吧，具体还没用到过。
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                    // TODO Auto-generated method stub
+                    //这是文本框改变之前会执行的动作
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // TODO Auto-generated method stub
+                    /**这是文本框改变之后 会执行的动作
+                     * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+                     * 所以这里我们就需要加上数据的修改的动作了。
+                     */
+                    Log.i("text","changed");
+                }
+            });
 
         }
         //继承listener类
