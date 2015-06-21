@@ -68,6 +68,17 @@ class UserController extends Controller {
             $this -> jsonReturn($result);
         }
     }
+
+    public function addUser(){
+        $User = D("User");
+        if ($User -> create()){
+            $User -> add();
+            echo "1";
+        }
+        else{
+            echo "0";
+        }
+    }
     private function jsonReturn($return){
         echo json_encode($return);
     }

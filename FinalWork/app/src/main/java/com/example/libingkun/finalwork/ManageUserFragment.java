@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -68,6 +69,7 @@ public class ManageUserFragment extends Fragment {
     private static final int MSG_ERROR = 0;
     private static final int MSG_SUCCESS = 1;
 
+    private Button createUser;
     private ListView userList;
     private EditText eSearch;
 
@@ -110,11 +112,28 @@ public class ManageUserFragment extends Fragment {
         viewRoot = inflater.inflate(R.layout.fragment_manage_user, container, false);
         //获取Activity
         myActivity = this.getActivity();
+        //获取添加用户Button
+        setCreateUserListener();
         //创建用户列表
         createList();
 
         return viewRoot;
     }
+    private void setCreateUserListener(){
+        createUser = (Button)viewRoot.findViewById(R.id.createUser);
+        createUser.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View v) {
+                                              FragmentManager fragmentManager = getFragmentManager();
+                                              Fragment thisFragment = NewUserFragment.newInstance("","");
+                                              fragmentManager.beginTransaction()
+                                                      .replace(R.id.container, thisFragment)
+                                                      .commit();
+                                          }
+                                      }
+        );
+    }
+
 
 
     private void createList(){
@@ -186,6 +205,11 @@ public class ManageUserFragment extends Fragment {
     }
     class MyHandler extends Handler {
         private UserListListener listener = new UserListListener();
+        private List<Map<String, Object>> listItems;
+        private SimpleAdapter adapter;
+        private ArrayList<String> userID;
+        private ArrayList<String> userName;
+        private ArrayList<String> userType;
         @Override
         public void handleMessage(Message msg){
             super.handleMessage(msg);
@@ -200,9 +224,9 @@ public class ManageUserFragment extends Fragment {
 
         }
         private void initUserListByResult() {
-            ArrayList<String> userID = new ArrayList<String>();
-            ArrayList<String> userName = new ArrayList<String>();
-            ArrayList<String> userType = new ArrayList<String>();
+            userID = new ArrayList<String>();
+            userName = new ArrayList<String>();
+            userType = new ArrayList<String>();
             try {
                 JSONTokener jsonParser = new JSONTokener(result);
                 JSONArray jsonResult = (JSONArray) jsonParser.nextValue();
@@ -217,7 +241,7 @@ public class ManageUserFragment extends Fragment {
                 Log.i("exception",e.toString());
             }
 
-            List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
+            listItems = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < userName.size(); i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("userID", userID.get(i));
@@ -225,7 +249,7 @@ public class ManageUserFragment extends Fragment {
                 map.put("userType", getUserType(userType.get(i)));
                 listItems.add(map);
             }
-            SimpleAdapter adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
+            adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
                     R.layout.user_list_item, new String[]{"userID","userName", "userType"}, new int[]{
                     R.id.userID,R.id.userName, R.id.userType});
             userList.setAdapter(adapter);
@@ -261,6 +285,24 @@ public class ManageUserFragment extends Fragment {
                      * 所以这里我们就需要加上数据的修改的动作了。
                      */
                     Log.i("text","changed");
+                    String data = eSearch.getText().toString();
+                    getmDataSub(data);
+                }
+
+                private void  getmDataSub(String data)
+                {
+                    listItems.clear();
+                    int length = userID.size();
+                    for(int i = 0; i < length; ++i){
+                        if(userID.get(i).contains(data) || userName.get(i).contains(data) || getUserType(userType.get(i)).contains(data)){
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            map.put("userID", userID.get(i));
+                            map.put("userName", userName.get(i));
+                            map.put("userType", getUserType(userType.get(i)));
+                            listItems.add(map);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
                 }
             });
 
