@@ -20,7 +20,7 @@
         android:text="派单员："
         android:textSize="12sp"/>
         <EditText
-        android:id="@+id/mytest"
+        android:id="@+id/distributor"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
@@ -35,7 +35,7 @@
         <Spinner
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/list_item"/>
+        android:id="@+id/saleman"/>
         <TextView
             android:id="@+id/mytest2"
             android:layout_width="fill_parent"
@@ -43,7 +43,7 @@
             android:text="初评编号："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/first_assess_number"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -55,7 +55,7 @@
             android:text="期间归属："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/report_month"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -67,7 +67,7 @@
             android:text="联系人："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/contacts"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -79,19 +79,7 @@
         android:text="联系电话："
         android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="请输入联系电话"/>
-        <TextView
-            android:id="@+id/mytest2"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="联系电话："
-            android:textSize="12sp"/>
-        <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/contacts_phone"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -103,7 +91,7 @@
             android:text="一级派单单位："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/first_distributor"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -115,7 +103,7 @@
             android:text="二级派单单位："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/second_distributor"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -127,7 +115,7 @@
             android:text="三级派单单位："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/third_distributor"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -141,7 +129,7 @@
         <Spinner
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/list_ite1"/>
+            android:id="@+id/assessment"/>
         <TextView
             android:id="@+id/mytest2"
             android:layout_width="fill_parent"
@@ -149,7 +137,7 @@
             android:text="属地："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/street"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -161,7 +149,7 @@
             android:text="房产坐落地："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/location"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -173,7 +161,7 @@
             android:text="备注（评估员或派单员用）："
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/assessment_remark"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -185,7 +173,7 @@
             android:text="小区名称"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/village_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -197,7 +185,7 @@
             android:text="实际评估日期"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/assess_date"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -209,7 +197,7 @@
             android:text="外勤工作时间（小时）"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/outside_time"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -221,7 +209,7 @@
             android:text="评估总价"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/assess_price"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -235,7 +223,7 @@
         <Spinner
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item3"/>
+            android:id="@+id/fist_appraiser"/>
         <TextView
             android:id="@+id/mytest2"
             android:layout_width="fill_parent"
@@ -243,7 +231,7 @@
             android:text="一级审核意见"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/fist_appraiser_remark"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -257,7 +245,7 @@
         <Spinner
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item4"/>
+            android:id="@+id/second_appraiser"/>
         <TextView
             android:id="@+id/mytest2"
             android:layout_width="fill_parent"
@@ -265,7 +253,7 @@
             android:text="二级审核意见"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/second_appraiser_remark"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -277,7 +265,7 @@
         android:text="报告编号"
         android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/report_number"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -289,7 +277,7 @@
             android:text="报告日期"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/report_date"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -301,9 +289,10 @@
             android:text="报告类型"
             android:textSize="12sp"/>
         <Spinner
+            android:entries="@array/reportType"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item5"/>
+            android:id="@+id/report_type"/>
         <TextView
             android:id="@+id/mytest2"
             android:layout_width="fill_parent"
@@ -311,7 +300,7 @@
             android:text="备注（文员用)"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/clerk_remark"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -323,7 +312,7 @@
             android:text="收费"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/fee"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -335,11 +324,16 @@
             android:text="备注（财务用）"
             android:textSize="12sp"/>
         <EditText
-            android:id="@+id/mytest"
+            android:id="@+id/treasuter_remark"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
             android:hint="请输入备注"/>
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="创建报告"
+            android:id="@+id/report_button"/>
     </LinearLayout>
 
     </ScrollView>

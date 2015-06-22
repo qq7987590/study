@@ -26,6 +26,11 @@
         <item>一级评估师</item>
         <item>二级评估师</item>
     </string-array>
+
+    <string-array name="reportType">
+        <item>商贷</item>
+        <item>综合贷款</item>
+    </string-array>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
