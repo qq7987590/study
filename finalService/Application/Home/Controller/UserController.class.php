@@ -79,6 +79,19 @@ class UserController extends Controller {
             echo "0";
         }
     }
+    public function getItemList(){
+        $User = M("User");
+        $saleman = $User->field("name")->where("type = 1")->select();
+        $assessment = $User->field("name")->where("type = 2")->select();
+        $firstAppraiser = $User->field("name")->where("type = 5")->select();
+        $secondAppraiser = $User->field("name")->where("type = 6")->select();
+        $result = array(
+            'saleman' => $saleman,
+            'assessment' =>  $assessment,
+            'firstAppraiser' => $firstAppraiser,
+            'secondAppraiser' => $secondAppraiser,);
+        $this -> jsonReturn($result);
+    }
     private function jsonReturn($return){
         echo json_encode($return);
     }

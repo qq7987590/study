@@ -1,6 +1,7 @@
 package com.example.libingkun.finalwork;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,10 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +87,9 @@ public class CreateReportFragment extends Fragment {
     private Button reportButton;
 
     private Activity myActivity;
+    private View viewRoot;
     private String result;
+    private String listJsonResult;
 
     /**
      * Use this factory method to create a new instance of
@@ -118,12 +126,62 @@ public class CreateReportFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View viewRoot = inflater.inflate(R.layout.fragment_create_report, container, false);
+        viewRoot = inflater.inflate(R.layout.fragment_create_report, container, false);
         myActivity = this.getActivity();
         getViewControl(viewRoot);
-
+        setDistributorText();
+        addSpanerItem();
         addButtonListener();
         return viewRoot;
+    }
+
+    private void setDistributorText(){
+        SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
+        distributor.setText(msp.getString("name", ""));
+        distributor.setEnabled(false);
+    }
+
+    private void addSpanerItem(){
+        //创建Handler
+        createHandler();
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                //
+                SharedPreferences sp = myActivity.getSharedPreferences("user",myActivity.MODE_PRIVATE);
+                //请求地址
+                String target = "http://" + getString(R.string.server_host) + "/Home/User/getItemList";
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost httpRequst = new HttpPost(target);
+                //将要传的值保存到List集合中
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("param","post"));
+                //创建HttpGet对象
+                try {
+                    //执行HttpClient请求
+                    httpRequst.setEntity(new UrlEncodedFormEntity(params,"utf-8"));
+                    HttpResponse httpResponse = httpClient.execute(httpRequst);
+//                        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                    listJsonResult = EntityUtils.toString(httpResponse.getEntity());
+//                        }
+//                        else{
+//                            result="请求失败";
+//                        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //用handler处理消息
+                Message msg = handler.obtainMessage();
+                if("-1".equals(result)){
+                    msg.what = LIST_ERROR;
+                }
+                else{
+                    msg.what = LIST_SUCCESS;
+                }
+                handler.sendMessage(msg);
+            }
+        }).start();
     }
 
     private void addButtonListener(){
@@ -223,7 +281,8 @@ public class CreateReportFragment extends Fragment {
     private MyHandler handler;
     private static final int MSG_ERROR = 0;
     private static final int MSG_SUCCESS = 1;
-
+    private static final int LIST_SUCCESS = 2;
+    private static final int LIST_ERROR = 3;
     //handler相关2
     private void createHandler(){
         handler = new MyHandler();
@@ -240,9 +299,81 @@ public class CreateReportFragment extends Fragment {
                 Log.i("res", result);
                 Toast.makeText(myActivity, "信息修改成功!", Toast.LENGTH_SHORT).show();
             }
+            if (msg.what == LIST_SUCCESS){
+                Log.i("res", listJsonResult);
+                Toast.makeText(myActivity, "获取信息成功!", Toast.LENGTH_SHORT).show();
+                setSalemanItems();
+                setAssessmentItems();
+                setFirstAppraisertemss();
+                setSecondAppraisertemss();
+            }
+            if(msg.what == LIST_ERROR){
+                Log.i("res", listJsonResult);
+                Toast.makeText(myActivity, "获取信息失败!", Toast.LENGTH_SHORT).show();
+            }
 
         }
     };
+    private void setSalemanItems(){
+        JSONTokener jsonParser = new JSONTokener(listJsonResult);
+        try {
+            JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
+            JSONArray salemanArray = (JSONArray) jsonResult.getJSONArray("saleman");
+            List<String> sl = new ArrayList<String>();
+            for (int i = 0; i < salemanArray.length(); i++) {
+                sl.add(salemanArray.getJSONObject(i).getString("name"));
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(viewRoot.getContext(),R.layout.saleman_list_item, R.id.one_saleman,sl);
+            saleman.setAdapter(adapter);
+        }catch(Exception e){
+            Log.i("exc",e.toString());
+        }
+    }
+    private  void setAssessmentItems(){
+        JSONTokener jsonParser = new JSONTokener(listJsonResult);
+        try {
+            JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
+            JSONArray assessmentArray = (JSONArray) jsonResult.getJSONArray("assessment");
+            List<String> sl = new ArrayList<String>();
+            for (int i = 0; i < assessmentArray.length(); i++) {
+                sl.add(assessmentArray.getJSONObject(i).getString("name"));
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(viewRoot.getContext(),R.layout.assessment_list_item, R.id.one_assessment,sl);
+            assessment.setAdapter(adapter);
+        }catch(Exception e){
+            Log.i("exc",e.toString());
+        }
+    }
+    private  void setFirstAppraisertemss(){
+        JSONTokener jsonParser = new JSONTokener(listJsonResult);
+        try {
+            JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
+            JSONArray firstAppraiserArray = (JSONArray) jsonResult.getJSONArray("firstAppraiser");
+            List<String> sl = new ArrayList<String>();
+            for (int i = 0; i < firstAppraiserArray.length(); i++) {
+                sl.add(firstAppraiserArray.getJSONObject(i).getString("name"));
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(viewRoot.getContext(),R.layout.first_appraiser_item, R.id.one_first_appraiser,sl);
+            firstAppraiser.setAdapter(adapter);
+        }catch(Exception e){
+            Log.i("exc",e.toString());
+        }
+    }
+    private  void setSecondAppraisertemss(){
+        JSONTokener jsonParser = new JSONTokener(listJsonResult);
+        try {
+            JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
+            JSONArray secondAppraiserArray = (JSONArray) jsonResult.getJSONArray("secondAppraiser");
+            List<String> sl = new ArrayList<String>();
+            for (int i = 0; i < secondAppraiserArray.length(); i++) {
+                sl.add(secondAppraiserArray.getJSONObject(i).getString("name"));
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(viewRoot.getContext(),R.layout.second_appraiser_item, R.id.one_second_appraiser,sl);
+            secondAppraiser.setAdapter(adapter);
+        }catch(Exception e){
+            Log.i("exc",e.toString());
+        }
+    }
     private void getViewControl(View viewRoot){
         distributor = (EditText)viewRoot.findViewById(R.id.distributor);
         saleman = (Spinner)viewRoot.findViewById(R.id.saleman);
