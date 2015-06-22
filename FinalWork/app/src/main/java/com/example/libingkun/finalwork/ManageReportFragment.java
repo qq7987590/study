@@ -1,14 +1,42 @@
 package com.example.libingkun.finalwork;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,6 +57,14 @@ public class ManageReportFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private View viewRoot;
+    private Activity myActivity;
+    private EditText eSearch;
+    private ListView reportList;
+    private MyHandler handler;
+    private String result="";
+    private static final int MSG_ERROR = 0;
+    private static final int MSG_SUCCESS = 1;
 
 
 
@@ -68,7 +104,182 @@ public class ManageReportFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_manage_report, container, false);
+        viewRoot = inflater.inflate(R.layout.fragment_manage_report, container, false);
+        //获取Activity
+        myActivity = this.getActivity();
+        //创建Report列表
+        createList();
+        return viewRoot;
+    }
+    private void createList(){
+        //获得列表view
+        reportList = (ListView)viewRoot.findViewById(R.id.repoterList);
+        eSearch = (EditText)viewRoot.findViewById(R.id.etSearch);
+        //创建Handler
+        createHandler();
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                //请求地址
+                String target = "http://" + getString(R.string.server_host) + "/Home/Report/getAllReport";
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost httpRequst = new HttpPost(target);
+                //将要传的值保存到List集合中
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("param","post"));
+                //创建HttpGet对象
+                try {
+                    //执行HttpClient请求
+                    httpRequst.setEntity(new UrlEncodedFormEntity(params,"utf-8"));
+                    HttpResponse httpResponse = httpClient.execute(httpRequst);
+//                        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                    result = EntityUtils.toString(httpResponse.getEntity());
+//                        }
+//                        else{
+//                            result="请求失败";
+//                        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //用handler处理消息
+                Message msg = handler.obtainMessage();
+                if(!"-1".equals(result)){
+                    msg.what = MSG_SUCCESS;
+                }
+                else{
+                    msg.what = MSG_ERROR;
+                }
+                handler.sendMessage(msg);
+            }
+        }).start();
+    }
+    private void createHandler(){
+        handler = new MyHandler();
+    }
+    class MyHandler extends Handler {
+        private ReportListListener listener = new ReportListListener();
+        private List<Map<String, Object>> listItems;
+        private SimpleAdapter adapter;
+        private ArrayList<String> reportNumber;
+        private ArrayList<String> villageName;
+        private ArrayList<String> location;
+        @Override
+        public void handleMessage(Message msg){
+            super.handleMessage(msg);
+            if(msg.what == MSG_ERROR){
+                Log.i("res", result);
+                Toast.makeText(myActivity, "获取不到用户数据!", Toast.LENGTH_SHORT).show();
+            }
+            if(msg.what == MSG_SUCCESS){
+                Log.i("res",result);
+                initReportListByResult();
+            }
+
+        }
+        private void initReportListByResult() {
+            reportNumber = new ArrayList<String>();
+            villageName = new ArrayList<String>();
+            location = new ArrayList<String>();
+            try {
+                JSONTokener jsonParser = new JSONTokener(result);
+                JSONArray jsonResult = (JSONArray) jsonParser.nextValue();
+                for (int i = 0; i < jsonResult.length(); i++) {
+                    JSONObject jo = jsonResult.getJSONObject(i);
+                    reportNumber.add(jo.getString("report_number"));
+                    villageName.add(jo.getString("village_name"));
+                    location.add(jo.getString("location"));
+                }
+            }
+            catch (Exception e){
+                Log.i("exception",e.toString());
+            }
+
+            listItems = new ArrayList<Map<String, Object>>();
+            for (int i = 0; i < reportNumber.size(); i++) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("report_number", reportNumber.get(i));
+                map.put("village_name", villageName.get(i));
+                map.put("location", location.get(i));
+                listItems.add(map);
+            }
+            adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
+                    R.layout.report_list_item, new String[]{"report_number","village_name", "location"}, new int[]{
+                    R.id.location,R.id.village_name, R.id.location});
+            reportList.setAdapter(adapter);
+            //增加listener
+            reportList.setOnItemClickListener(listener);
+            set_eSearch_TextChanged();
+
+        }
+
+        private void set_eSearch_TextChanged()
+        {
+
+            eSearch.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                    // TODO Auto-generated method stub
+                    //这个应该是在改变的时候会做的动作吧，具体还没用到过。
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                    // TODO Auto-generated method stub
+                    //这是文本框改变之前会执行的动作
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // TODO Auto-generated method stub
+                    /**这是文本框改变之后 会执行的动作
+                     * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+                     * 所以这里我们就需要加上数据的修改的动作了。
+                     */
+                    Log.i("text","changed");
+                    String data = eSearch.getText().toString();
+                    getmDataSub(data);
+                }
+
+                private void  getmDataSub(String data)
+                {
+                    listItems.clear();
+                    int length = reportNumber.size();
+                    for(int i = 0; i < length; ++i){
+                        if(reportNumber.get(i).contains(data) || villageName.get(i).contains(data) || location.get(i).contains(data)){
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            map.put("report_number", reportNumber.get(i));
+                            map.put("village_name", villageName.get(i));
+                            map.put("location", location.get(i));
+                            listItems.add(map);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            });
+
+        }
+        //继承listener类
+        class ReportListListener implements AdapterView.OnItemClickListener {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                for(int i =0;i<reportList.getChildCount();i++){
+                    if(position == i) {
+                           Log.i("d",String.valueOf(i));
+//                        TextView uidText = (TextView)reportList.getChildAt(i).findViewById(R.id.userID);
+//                        String uidString = uidText.getText().toString();
+//                        FragmentManager fragmentManager = getFragmentManager();
+//                        Fragment thisFragment = UserInfoFragment.newInstance(uidString,"");
+////                        CreateReportFragment a= CreateReportFragment.newInstance("","");
+//                        fragmentManager.beginTransaction()
+//                                .replace(R.id.container, thisFragment)
+//                                .commit();
+                    }
+                }
+            }
+        }
     }
 
 

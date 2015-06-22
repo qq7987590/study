@@ -293,11 +293,11 @@ public class CreateReportFragment extends Fragment {
             super.handleMessage(msg);
             if (msg.what == MSG_ERROR) {
                 Log.i("res", result);
-                Toast.makeText(myActivity, "信息修改失败!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(myActivity, "创建失败!", Toast.LENGTH_SHORT).show();
             }
             if (msg.what == MSG_SUCCESS) {
                 Log.i("res", result);
-                Toast.makeText(myActivity, "信息修改成功!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(myActivity, "创建成功!", Toast.LENGTH_SHORT).show();
             }
             if (msg.what == LIST_SUCCESS){
                 Log.i("res", listJsonResult);
