@@ -2,6 +2,8 @@ package com.example.libingkun.finalwork;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -161,6 +163,7 @@ public class ManageReportFragment extends Fragment {
         private ReportListListener listener = new ReportListListener();
         private List<Map<String, Object>> listItems;
         private SimpleAdapter adapter;
+        private ArrayList<String> reportStat;
         private ArrayList<String> reportNumber;
         private ArrayList<String> villageName;
         private ArrayList<String> location;
@@ -178,6 +181,7 @@ public class ManageReportFragment extends Fragment {
 
         }
         private void initReportListByResult() {
+            reportStat = new ArrayList<String>();
             reportNumber = new ArrayList<String>();
             villageName = new ArrayList<String>();
             location = new ArrayList<String>();
@@ -186,6 +190,7 @@ public class ManageReportFragment extends Fragment {
                 JSONArray jsonResult = (JSONArray) jsonParser.nextValue();
                 for (int i = 0; i < jsonResult.length(); i++) {
                     JSONObject jo = jsonResult.getJSONObject(i);
+                    reportStat.add(jo.getString("stat"));
                     reportNumber.add(jo.getString("report_number"));
                     villageName.add(jo.getString("village_name"));
                     location.add(jo.getString("location"));
@@ -198,14 +203,15 @@ public class ManageReportFragment extends Fragment {
             listItems = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < reportNumber.size(); i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
+                map.put("report_stat", reportStat.get(i));
                 map.put("report_number", reportNumber.get(i));
                 map.put("village_name", villageName.get(i));
                 map.put("location", location.get(i));
                 listItems.add(map);
             }
-            adapter = new SimpleAdapter(viewRoot.getContext(), listItems,
-                    R.layout.report_list_item, new String[]{"report_number","village_name", "location"}, new int[]{
-                    R.id.location,R.id.village_name, R.id.location});
+            adapter = new MyAdapter(viewRoot.getContext(), listItems,
+                    R.layout.report_list_item, new String[]{"report_stat","report_number","village_name", "location"}, new int[]{
+                    R.id.report_stat,R.id.location,R.id.village_name, R.id.location});
             reportList.setAdapter(adapter);
             //增加listener
             reportList.setOnItemClickListener(listener);
@@ -213,6 +219,30 @@ public class ManageReportFragment extends Fragment {
 
         }
 
+        class MyAdapter extends SimpleAdapter{
+            private int[] colors = { Color.BLUE, Color.RED,Color.BLUE, Color.RED};
+            public MyAdapter(Context context,
+                                    List<? extends Map<String, ?>> data, int resource,
+                                    String[] from, int[] to) {
+                super(context, data, resource, from, to);
+            }
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView stat = (TextView)view.findViewById(R.id.report_stat);
+                switch (stat.getText().toString()){
+                    case "0":
+                        view.setBackgroundColor(Color.rgb(186,255,173));
+                        break;
+                    case "1":
+                        view.setBackgroundColor(Color.rgb(228,255,153));
+                        break;
+                    case "2":
+                        break;
+                }
+                return view;
+            }
+        }
         private void set_eSearch_TextChanged()
         {
 
@@ -250,6 +280,7 @@ public class ManageReportFragment extends Fragment {
                     for(int i = 0; i < length; ++i){
                         if(reportNumber.get(i).contains(data) || villageName.get(i).contains(data) || location.get(i).contains(data)){
                             Map<String, Object> map = new HashMap<String, Object>();
+                            map.put("report_stat", reportStat.get(i));
                             map.put("report_number", reportNumber.get(i));
                             map.put("village_name", villageName.get(i));
                             map.put("location", location.get(i));
