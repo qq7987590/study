@@ -22,6 +22,11 @@ class ReportController extends Controller {
             echo "0";
         }
     }
+    public function updateReport(){
+        $report = D("Report");
+        $reportNumber = $_POST['report_number'];
+        $report -> where("report_number = '$reportNumber'") -> save($_POST);
+    }
     public function getReportById(){
         $report = M("Report");
         $id = $_POST['id'];

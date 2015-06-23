@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
@@ -126,7 +127,6 @@ public class EditReportFragment extends Fragment {
         myActivity = this.getActivity();
         getViewControl(viewRoot);
         addSpanerItem();
-        getOrginData();
         addButtonListener();
         return viewRoot;
     }
@@ -240,7 +240,7 @@ public class EditReportFragment extends Fragment {
                     //
                     SharedPreferences sp = myActivity.getSharedPreferences("user",myActivity.MODE_PRIVATE);
                     //请求地址
-                    String target = "http://" + getString(R.string.server_host) + "/Home/Report/createReport";
+                    String target = "http://" + getString(R.string.server_host) + "/Home/Report/updateReport";
                     HttpClient httpClient = new DefaultHttpClient();
                     HttpPost httpRequst = new HttpPost(target);
                     //将要传的值保存到List集合中
@@ -301,7 +301,7 @@ public class EditReportFragment extends Fragment {
                     }
                     //用handler处理消息
                     Message msg = handler.obtainMessage();
-                    if("1".equals(result)){
+                    if(!"-1".equals(result)){
                         msg.what = MSG_SUCCESS;
                     }
                     else{
@@ -333,11 +333,11 @@ public class EditReportFragment extends Fragment {
             super.handleMessage(msg);
             if (msg.what == MSG_ERROR) {
                 Log.i("res", result);
-                Toast.makeText(myActivity, "创建失败!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(myActivity, "修改失败!", Toast.LENGTH_SHORT).show();
             }
             if (msg.what == MSG_SUCCESS) {
                 Log.i("res", result);
-                Toast.makeText(myActivity, "创建成功!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(myActivity, "修改成功!", Toast.LENGTH_SHORT).show();
             }
             if (msg.what == LIST_SUCCESS){
                 Log.i("res", listJsonResult);
@@ -346,6 +346,7 @@ public class EditReportFragment extends Fragment {
                 setAssessmentItems();
                 setFirstAppraisertemss();
                 setSecondAppraisertemss();
+                getOrginData();
             }
             if(msg.what == LIST_ERROR){
                 Log.i("res", listJsonResult);
@@ -365,8 +366,49 @@ public class EditReportFragment extends Fragment {
         try {
             JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
             distributor.setText(jsonResult.getString("distributor"));
+            setSpinnerItemSelectedByValue(saleman,jsonResult.getString("saleman"));
+            setSpinnerItemSelectedByValue(assessment,jsonResult.getString("assessment"));
+            setSpinnerItemSelectedByValue(firstAppraiser,jsonResult.getString("fist_appraiser"));
+            setSpinnerItemSelectedByValue(secondAppraiser,jsonResult.getString("second_appraiser"));
+            firstAccessNumber.setText(jsonResult.getString("first_assess_number"));
+            reportMonth.setText(jsonResult.getString("report_month"));
+            contacts.setText(jsonResult.getString("contacts"));
+            contactsPhone.setText(jsonResult.getString("contacts_phone"));
+            firstDistributor.setText(jsonResult.getString("first_distributor"));
+            secondDistributor.setText(jsonResult.getString("second_distributor"));
+            thirdDistributor.setText(jsonResult.getString("third_distributor"));
+            street.setText(jsonResult.getString("street"));
+            location.setText(jsonResult.getString("location"));
+            assessRemark.setText(jsonResult.getString("assessment_remark"));
+            villageName.setText(jsonResult.getString("village_name"));
+            assessDate.setText(jsonResult.getString("assess_date"));
+            outsideTime.setText(jsonResult.getString("outside_time"));
+            assessPrice.setText(jsonResult.getString("assess_price"));
+            firstAppraiserRemark.setText(jsonResult.getString("fist_appraiser_remark"));
+            secondAppraiserRemark.setText(jsonResult.getString("second_appraiser_remark"));
+            reportNumber.setText(jsonResult.getString("report_number"));
+            reportDate.setText(jsonResult.getString("report_date"));
+            setSpinnerItemSelectedByValue(reportType,jsonResult.getString("report_type"));
+            clerkRemark.setText(jsonResult.getString("clerk_remark"));
+            treasuterRemark.setText(jsonResult.getString("treasuter_remark"));
+            fee.setText(jsonResult.getString("fee"));
         }catch(Exception e){
-            Log.i("exc",e.toString());
+            Log.i("exc1",e.toString());
+        }
+    }
+    /**
+     * 根据值, 设置spinner默认选中:
+     * @param spinner
+     * @param value
+     */
+    public static void setSpinnerItemSelectedByValue(Spinner spinner,String value){
+        SpinnerAdapter apsAdapter= spinner.getAdapter(); //得到SpinnerAdapter对象
+        int k= apsAdapter.getCount();
+        for(int i=0;i<k;i++){
+            if(value.equals(apsAdapter.getItem(i).toString())){
+                spinner.setSelection(i,true);// 默认选中项
+                break;
+            }
         }
     }
     private void setSalemanItems(){
