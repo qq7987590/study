@@ -22,6 +22,17 @@ class ReportController extends Controller {
             echo "0";
         }
     }
+    public function getReportById(){
+        $report = M("Report");
+        $id = $_POST['id'];
+        $result = $report -> where("report_number = '$id'") -> select();
+        if(sizeof($result) != 0){
+            $this -> jsonReturn($result[0]);
+        }
+        else{
+            echo "-1";
+        }
+    }
     private function jsonReturn($return){
         echo json_encode($return);
     }

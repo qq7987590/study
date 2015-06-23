@@ -211,7 +211,7 @@ public class ManageReportFragment extends Fragment {
             }
             adapter = new MyAdapter(viewRoot.getContext(), listItems,
                     R.layout.report_list_item, new String[]{"report_stat","report_number","village_name", "location"}, new int[]{
-                    R.id.report_stat,R.id.location,R.id.village_name, R.id.location});
+                    R.id.report_stat,R.id.report_number,R.id.village_name, R.id.location});
             reportList.setAdapter(adapter);
             //增加listener
             reportList.setOnItemClickListener(listener);
@@ -298,15 +298,16 @@ public class ManageReportFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 for(int i =0;i<reportList.getChildCount();i++){
                     if(position == i) {
-                           Log.i("d",String.valueOf(i));
-//                        TextView uidText = (TextView)reportList.getChildAt(i).findViewById(R.id.userID);
-//                        String uidString = uidText.getText().toString();
-//                        FragmentManager fragmentManager = getFragmentManager();
-//                        Fragment thisFragment = UserInfoFragment.newInstance(uidString,"");
-////                        CreateReportFragment a= CreateReportFragment.newInstance("","");
-//                        fragmentManager.beginTransaction()
-//                                .replace(R.id.container, thisFragment)
-//                                .commit();
+                        TextView uidText = (TextView)reportList.getChildAt(i).findViewById(R.id.report_number);
+
+                        String uidString = uidText.getText().toString();
+                        Log.i("myid",uidString);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        Fragment thisFragment = EditReportFragment.newInstance(uidString,"");
+//                        CreateReportFragment a= CreateReportFragment.newInstance("","");
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.container, thisFragment)
+                                .commit();
                     }
                 }
             }
