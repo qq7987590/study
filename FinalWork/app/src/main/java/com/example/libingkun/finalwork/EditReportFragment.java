@@ -356,21 +356,15 @@ public class EditReportFragment extends Fragment {
             }
             if(msg.what == ORGIN_DATA_SUCCESS){
                 Log.i("res", orginData);
-//                initFormByOrginData();
+                initFormByOrginData();
             }
         }
     };
     private void initFormByOrginData(){
-        JSONTokener jsonParser = new JSONTokener(listJsonResult);
+        JSONTokener jsonParser = new JSONTokener(orginData);
         try {
             JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
-            JSONArray salemanArray = (JSONArray) jsonResult.getJSONArray("saleman");
-            List<String> sl = new ArrayList<String>();
-            for (int i = 0; i < salemanArray.length(); i++) {
-                sl.add(salemanArray.getJSONObject(i).getString("name"));
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(viewRoot.getContext(),R.layout.saleman_list_item, R.id.one_saleman,sl);
-            saleman.setAdapter(adapter);
+            distributor.setText(jsonResult.getString("distributor"));
         }catch(Exception e){
             Log.i("exc",e.toString());
         }
