@@ -17,7 +17,6 @@
     <string name="action_example">Example action</string>
 
     <string-array name="userType">
-        <item>管理员</item>
         <item>派单员</item>
         <item>业务员</item>
         <item>评估员</item>
@@ -25,6 +24,7 @@
         <item>文员</item>
         <item>一级评估师</item>
         <item>二级评估师</item>
+        <item>管理员</item>
     </string-array>
 
     <string-array name="reportType">

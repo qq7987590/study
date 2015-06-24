@@ -151,7 +151,7 @@ public class NewUserFragment extends Fragment {
                     } else if (fChild.isChecked()) {
                         sexString = "f";
                     }
-                    String userTypeString = userType.getSelectedItem().toString();
+                    String userTypeString = String.valueOf(userType.getSelectedItemPosition());
                     String phoneString = phone.getText().toString();
                     String emailString = email.getText().toString();
                     String birthdayString = birthday.getText().toString();
@@ -164,14 +164,14 @@ public class NewUserFragment extends Fragment {
                     //将要传的值保存到List集合中
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
                     params.add(new BasicNameValuePair("param", "post"));
-                    params.add(new BasicNameValuePair("userType", userTypeString));
+                    params.add(new BasicNameValuePair("type", userTypeString));
                     params.add(new BasicNameValuePair("email", emailString));
                     params.add(new BasicNameValuePair("password", passwordString));
                     params.add(new BasicNameValuePair("name", nameString));
                     params.add(new BasicNameValuePair("sex", sexString));
                     params.add(new BasicNameValuePair("phone", phoneString));
                     params.add(new BasicNameValuePair("birthday", birthdayString));
-                    params.add(new BasicNameValuePair("IDCard", IDCardString));
+                    params.add(new BasicNameValuePair("idcard", IDCardString));
                     //创建HttpGet对象
                     try {
                         //执行HttpClient请求

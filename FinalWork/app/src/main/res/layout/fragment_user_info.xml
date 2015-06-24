@@ -14,6 +14,16 @@
         android:orientation="vertical"
         >
         <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="用户类型:"
+            android:textSize="12sp"/>
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/userType"
+            android:entries="@array/userType"/>
+        <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="用户ID:"

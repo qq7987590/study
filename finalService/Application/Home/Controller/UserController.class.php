@@ -30,6 +30,7 @@ class UserController extends Controller {
             $uid = $result[0]['uid'];
             $user = M("User");
             $data = array(
+                'type' => $_POST['type'],
                 'email' => $_POST['newEmail'],
                 'name' => $_POST['name'],
                 'password' => $_POST['newPassword'],

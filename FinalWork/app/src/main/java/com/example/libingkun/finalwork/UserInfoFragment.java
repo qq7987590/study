@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
@@ -55,6 +57,7 @@ public class UserInfoFragment extends Fragment {
     private String mParam2;
 
     private Activity myActivity;
+    private Spinner userType;
     private EditText userID;
     private EditText name;
     private RadioGroup sex;
@@ -111,6 +114,7 @@ public class UserInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_user_info, container, false);
+        userType = (Spinner)rootView.findViewById(R.id.userType);
         userID = (EditText)rootView.findViewById(R.id.userID);
         name = (EditText)rootView.findViewById(R.id.name);
         sex = (RadioGroup)rootView.findViewById(R.id.sex);
@@ -230,6 +234,8 @@ public class UserInfoFragment extends Fragment {
                 @Override
                 public void run() {
                     //获取数据
+                    String userTypeString = String.valueOf(userType.getSelectedItemPosition());
+                    Log.i("sfdhg",userTypeString);
                     String nameString = name.getText().toString();
                     String sexString = "";
                     RadioButton mChild= (RadioButton)sex.getChildAt(0);
@@ -252,6 +258,7 @@ public class UserInfoFragment extends Fragment {
                     //将要传的值保存到List集合中
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
                     params.add(new BasicNameValuePair("param","post"));
+                    params.add(new BasicNameValuePair("type",userTypeString));
                     params.add(new BasicNameValuePair("email",emailString));
                     params.add(new BasicNameValuePair("password",passwordString));
                     params.add(new BasicNameValuePair("name",nameString));
@@ -321,6 +328,12 @@ public class UserInfoFragment extends Fragment {
             JSONTokener jsonParser = new JSONTokener(result);
             try {
                 JSONObject jsonResult = (JSONObject) jsonParser.nextValue();
+                userType.setSelection(jsonResult.getInt("type"));
+                SharedPreferences msp = myActivity.getSharedPreferences("user", Context.MODE_PRIVATE);
+                String mytype = msp.getString("type","");
+                if(!"7".equals(mytype)){
+                    userType.setEnabled(false);
+                }
                 userID.setText(jsonResult.getString("uid"));
                 name.setText(jsonResult.getString("name"));
                 if ("m".equals(jsonResult.getString("sex")))

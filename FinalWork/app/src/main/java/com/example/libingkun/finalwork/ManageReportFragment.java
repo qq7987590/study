@@ -3,6 +3,7 @@ package com.example.libingkun.finalwork;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -130,6 +131,9 @@ public class ManageReportFragment extends Fragment {
                 //将要传的值保存到List集合中
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("param","post"));
+                SharedPreferences sp = myActivity.getSharedPreferences("user",myActivity.MODE_PRIVATE);
+                params.add(new BasicNameValuePair("user_name",sp.getString("name","")));
+                params.add(new BasicNameValuePair("user_type",sp.getString("type","")));
                 //创建HttpGet对象
                 try {
                     //执行HttpClient请求
@@ -301,7 +305,6 @@ public class ManageReportFragment extends Fragment {
                         TextView uidText = (TextView)reportList.getChildAt(i).findViewById(R.id.report_number);
 
                         String uidString = uidText.getText().toString();
-                        Log.i("myid",uidString);
                         FragmentManager fragmentManager = getFragmentManager();
                         Fragment thisFragment = EditReportFragment.newInstance(uidString,"");
 //                        CreateReportFragment a= CreateReportFragment.newInstance("","");

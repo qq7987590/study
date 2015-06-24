@@ -347,6 +347,7 @@ public class EditReportFragment extends Fragment {
                 setFirstAppraisertemss();
                 setSecondAppraisertemss();
                 getOrginData();
+                authorityControl();
             }
             if(msg.what == LIST_ERROR){
                 Log.i("res", listJsonResult);
@@ -361,6 +362,164 @@ public class EditReportFragment extends Fragment {
             }
         }
     };
+    private void authorityControl(){
+        SharedPreferences sp = myActivity.getSharedPreferences("user",myActivity.MODE_PRIVATE);
+        String userType = sp.getString("type","");
+        switch (userType){
+            case "0":
+                //派单员
+                break;
+            case "1":
+                //业务员
+                distributor.setVisibility(viewRoot.GONE);
+                saleman.setVisibility(viewRoot.GONE);
+                firstAccessNumber.setEnabled(false);
+                reportMonth.setEnabled(false);
+                assessment.setEnabled(false);
+                assessDate.setEnabled(false);
+                outsideTime.setVisibility(viewRoot.GONE);
+                assessPrice.setEnabled(false);
+                firstAppraiser.setEnabled(false);
+                firstAppraiserRemark.setEnabled(false);
+                secondAppraiser.setEnabled(false);
+                secondAppraiserRemark.setEnabled(false);
+                reportNumber.setEnabled(false);
+                reportDate.setEnabled(false);
+                reportType.setEnabled(false);
+                clerkRemark.setVisibility(viewRoot.GONE);
+                fee.setEnabled(false);
+                treasuterRemark.setVisibility(viewRoot.GONE);
+
+                break;
+            case "2":
+                //评估员
+                distributor.setVisibility(viewRoot.GONE);
+                saleman.setVisibility(viewRoot.GONE);
+                firstAccessNumber.setEnabled(false);
+                reportMonth.setEnabled(false);
+                firstDistributor.setEnabled(false);
+                secondDistributor.setEnabled(false);
+                thirdDistributor.setEnabled(false);
+                assessment.setEnabled(false);
+                street.setEnabled(false);
+                assessPrice.setEnabled(false);
+                firstAppraiserRemark.setEnabled(false);
+                secondAppraiser.setEnabled(false);
+                secondAppraiserRemark.setEnabled(false);
+                reportNumber.setEnabled(false);
+                reportDate.setEnabled(false);
+                reportType.setEnabled(false);
+                clerkRemark.setVisibility(viewRoot.GONE);
+                fee.setEnabled(false);
+                treasuterRemark.setVisibility(viewRoot.GONE);
+                break;
+            case "3":
+                //财务员
+                distributor.setVisibility(viewRoot.GONE);
+                saleman.setVisibility(viewRoot.GONE);
+                firstAccessNumber.setEnabled(false);
+                reportMonth.setEnabled(false);
+                contacts.setEnabled(false);
+                contactsPhone.setEnabled(false);
+                firstDistributor.setEnabled(false);
+                secondDistributor.setEnabled(false);
+                thirdDistributor.setEnabled(false);
+                assessment.setEnabled(false);
+                street.setEnabled(false);
+                assessDate.setEnabled(false);
+                location.setVisibility(viewRoot.GONE);
+                assessRemark.setVisibility(viewRoot.GONE);
+                villageName.setVisibility(viewRoot.GONE);
+                assessDate.setEnabled(false);
+                firstAppraiser.setEnabled(false);
+                firstAppraiserRemark.setEnabled(false);
+                secondAppraiser.setEnabled(false);
+                secondAppraiserRemark.setEnabled(false);
+                clerkRemark.setVisibility(viewRoot.GONE);
+                break;
+            case "4":
+                //文员
+                distributor.setVisibility(viewRoot.GONE);
+                saleman.setVisibility(viewRoot.GONE);
+                firstAccessNumber.setEnabled(false);
+                reportMonth.setEnabled(false);
+                contacts.setEnabled(false);
+                contactsPhone.setEnabled(false);
+                firstDistributor.setEnabled(false);
+                secondDistributor.setEnabled(false);
+                thirdDistributor.setEnabled(false);
+                assessment.setEnabled(false);
+                street.setEnabled(false);
+                location.setEnabled(false);
+                firstAppraiser.setEnabled(false);
+                firstAppraiserRemark.setEnabled(false);
+                secondAppraiser.setEnabled(false);
+                secondAppraiserRemark.setEnabled(false);
+                treasuterRemark.setVisibility(viewRoot.GONE);
+                break;
+            case "5":
+                //一级评估师
+                distributor.setVisibility(viewRoot.GONE);
+                saleman.setVisibility(viewRoot.GONE);
+                firstAccessNumber.setEnabled(false);
+                reportMonth.setEnabled(false);
+                contacts.setVisibility(viewRoot.GONE);
+                contactsPhone.setVisibility(viewRoot.GONE);
+                firstDistributor.setEnabled(false);
+                secondDistributor.setEnabled(false);
+                thirdDistributor.setVisibility(viewRoot.GONE);
+                assessment.setEnabled(false);
+                street.setEnabled(false);
+                location.setEnabled(false);
+                assessRemark.setVisibility(viewRoot.GONE);
+                villageName.setEnabled(false);
+                assessDate.setEnabled(false);
+                assessPrice.setEnabled(false);
+                reportNumber.setEnabled(false);
+                reportType.setEnabled(false);
+                reportDate.setEnabled(false);
+                outsideTime.setVisibility(viewRoot.GONE);
+                firstAppraiser.setVisibility(viewRoot.GONE);
+                secondAppraiser.setVisibility(viewRoot.GONE);
+                secondAppraiserRemark.setVisibility(viewRoot.GONE);
+                clerkRemark.setVisibility(viewRoot.GONE);
+                fee.setVisibility(viewRoot.GONE);
+                treasuterRemark.setVisibility(viewRoot.GONE);
+                break;
+            case "6":
+                //二级评估师
+                distributor.setVisibility(viewRoot.GONE);
+                saleman.setVisibility(viewRoot.GONE);
+                firstAccessNumber.setEnabled(false);
+                reportMonth.setEnabled(false);
+                contacts.setVisibility(viewRoot.GONE);
+                contactsPhone.setVisibility(viewRoot.GONE);
+                firstDistributor.setEnabled(false);
+                secondDistributor.setEnabled(false);
+                thirdDistributor.setVisibility(viewRoot.GONE);
+                assessment.setEnabled(false);
+                street.setEnabled(false);
+                location.setEnabled(false);
+                assessRemark.setVisibility(viewRoot.GONE);
+                villageName.setEnabled(false);
+                assessDate.setEnabled(false);
+                assessPrice.setEnabled(false);
+                reportNumber.setEnabled(false);
+                reportType.setEnabled(false);
+                reportDate.setEnabled(false);
+                outsideTime.setVisibility(viewRoot.GONE);
+                firstAppraiser.setVisibility(viewRoot.GONE);
+                secondAppraiser.setVisibility(viewRoot.GONE);
+                firstAppraiserRemark.setVisibility(viewRoot.GONE);
+                clerkRemark.setVisibility(viewRoot.GONE);
+                fee.setVisibility(viewRoot.GONE);
+                treasuterRemark.setVisibility(viewRoot.GONE);
+                break;
+            case "7":
+                //管理员
+                break;
+        }
+    }
     private void initFormByOrginData(){
         JSONTokener jsonParser = new JSONTokener(orginData);
         try {
