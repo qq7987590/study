@@ -168,8 +168,9 @@ public class ManageReportFragment extends Fragment {
         private List<Map<String, Object>> listItems;
         private SimpleAdapter adapter;
         private ArrayList<String> reportStat;
-        private ArrayList<String> reportNumber;
-        private ArrayList<String> villageName;
+        private ArrayList<String> firstAssessNumber;
+        private ArrayList<String> reportMonth;
+        private ArrayList<String> assessment;
         private ArrayList<String> location;
         @Override
         public void handleMessage(Message msg){
@@ -186,8 +187,9 @@ public class ManageReportFragment extends Fragment {
         }
         private void initReportListByResult() {
             reportStat = new ArrayList<String>();
-            reportNumber = new ArrayList<String>();
-            villageName = new ArrayList<String>();
+            firstAssessNumber = new ArrayList<String>();
+            reportMonth = new ArrayList<String>();
+            assessment = new ArrayList<String>();
             location = new ArrayList<String>();
             try {
                 JSONTokener jsonParser = new JSONTokener(result);
@@ -195,8 +197,9 @@ public class ManageReportFragment extends Fragment {
                 for (int i = 0; i < jsonResult.length(); i++) {
                     JSONObject jo = jsonResult.getJSONObject(i);
                     reportStat.add(jo.getString("stat"));
-                    reportNumber.add(jo.getString("report_number"));
-                    villageName.add(jo.getString("village_name"));
+                    firstAssessNumber.add(jo.getString("first_assess_number"));
+                    reportMonth.add(jo.getString("report_month"));
+                    assessment.add(jo.getString("assessment"));
                     location.add(jo.getString("location"));
                 }
             }
@@ -205,17 +208,18 @@ public class ManageReportFragment extends Fragment {
             }
 
             listItems = new ArrayList<Map<String, Object>>();
-            for (int i = 0; i < reportNumber.size(); i++) {
+            for (int i = 0; i < firstAssessNumber.size(); i++) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("report_stat", reportStat.get(i));
-                map.put("report_number", reportNumber.get(i));
-                map.put("village_name", villageName.get(i));
+                map.put("first_assess_number", firstAssessNumber.get(i));
+                map.put("report_month", reportMonth.get(i));
+                map.put("assessment", assessment.get(i));
                 map.put("location", location.get(i));
                 listItems.add(map);
             }
             adapter = new MyAdapter(viewRoot.getContext(), listItems,
-                    R.layout.report_list_item, new String[]{"report_stat","report_number","village_name", "location"}, new int[]{
-                    R.id.report_stat,R.id.report_number,R.id.village_name, R.id.location});
+                    R.layout.report_list_item, new String[]{"report_stat","first_assess_number","report_month","assessment", "location"}, new int[]{
+                    R.id.report_stat,R.id.first_assess_number,R.id.report_month,R.id.assessment, R.id.location});
             reportList.setAdapter(adapter);
             //增加listener
             reportList.setOnItemClickListener(listener);
@@ -279,14 +283,16 @@ public class ManageReportFragment extends Fragment {
 
                 private void  getmDataSub(String data)
                 {
+
                     listItems.clear();
-                    int length = reportNumber.size();
+                    int length = firstAssessNumber.size();
                     for(int i = 0; i < length; ++i){
-                        if(reportNumber.get(i).contains(data) || villageName.get(i).contains(data) || location.get(i).contains(data)){
+                        if(firstAssessNumber.get(i).contains(data) || reportMonth.get(i).contains(data) || assessment.get(i).contains(data)|| location.get(i).contains(data)){
                             Map<String, Object> map = new HashMap<String, Object>();
                             map.put("report_stat", reportStat.get(i));
-                            map.put("report_number", reportNumber.get(i));
-                            map.put("village_name", villageName.get(i));
+                            map.put("first_assess_number", firstAssessNumber.get(i));
+                            map.put("report_month", reportMonth.get(i));
+                            map.put("assessment", assessment.get(i));
                             map.put("location", location.get(i));
                             listItems.add(map);
                         }
