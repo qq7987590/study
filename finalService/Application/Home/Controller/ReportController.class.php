@@ -64,8 +64,8 @@ class ReportController extends Controller {
     }
     public function updateReport(){
         $report = D("Report");
-        $reportNumber = $_POST['report_number'];
-        $report -> where("report_number = '$reportNumber'") -> save($_POST);
+        $first_assess_number = $_POST['first_assess_number'];
+        $report -> where("first_assess_number = '$first_assess_number'") -> save($_POST);
         $stat["stat"] = 0;
         if($_POST["assess_date"] != "" && $_POST["outside_time"] != ""){
             $stat["stat"] = 1;
@@ -73,12 +73,12 @@ class ReportController extends Controller {
         if($_POST["report_number"] != "" && $_POST["report_type"] != "" && $_POST["report_date"] != ""){
             $stat["stat"] = 2;
         }
-        $report -> where("report_number = '$reportNumber'") -> save($stat);
+        $report -> where("first_assess_number = '$reportNumber'") -> save($stat);
     }
     public function getReportById(){
         $report = M("Report");
         $id = $_POST['id'];
-        $result = $report -> where("report_number = '$id'") -> select();
+        $result = $report -> where("first_assess_number = '$id'") -> select();
         if(sizeof($result) != 0){
             $this -> jsonReturn($result[0]);
         }

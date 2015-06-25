@@ -308,8 +308,7 @@ public class ManageReportFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 for(int i =0;i<reportList.getChildCount();i++){
                     if(position == i) {
-                        TextView uidText = (TextView)reportList.getChildAt(i).findViewById(R.id.report_number);
-
+                        TextView uidText = (TextView)reportList.getChildAt(i).findViewById(R.id.first_assess_number);
                         String uidString = uidText.getText().toString();
                         FragmentManager fragmentManager = getFragmentManager();
                         Fragment thisFragment = EditReportFragment.newInstance(uidString,"");
